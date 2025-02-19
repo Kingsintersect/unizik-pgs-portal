@@ -12,15 +12,18 @@ import { apiCallerBeta } from "@/lib/utils/apiCaller";
 import { LoginSession, SessionData } from "@/types/auth";
 
 export async function logout() {
-  const loginSession = (await getSession(loginSessionKey)) as SessionData;
+  const loginSession = (await getSession(
+    loginSessionKey
+  )) as SessionData | null;
   if (loginSession) {
-    const role = loginSession.role;
+    const role = loginSession.role ?? "";
     await deleteSessionKey(loginSessionKey);
     deleteSession();
-    return { role: role };
-  } else {
-    console.log("No login session found");
+    return { role };
   }
+  
+  console.log("No login session found");
+  return { role: null };
 }
 
 export const Signin = async (data: any) => {

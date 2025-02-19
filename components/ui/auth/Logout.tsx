@@ -12,14 +12,16 @@ export default function LogoutButton({ width, color }: { width: number, color: s
   const { removeUser } = useAppContext();
 
   const handleLogout = async () => {
-    const { role } = await logout();
-    if (role) {
-      removeToken();
-      removeUser();
-      router.push(`${baseUrl}/auth/signin`);
-            router.refresh();
-    }
-  };
+  const { role } = await logout();
+
+  // if (role) {
+    removeToken();
+    removeUser();
+    router.push(`${baseUrl}/auth/signin`);
+    router.refresh();
+  // }
+};
+
 
   return (
     <div onClick={handleLogout} className="cursor-pointer">
