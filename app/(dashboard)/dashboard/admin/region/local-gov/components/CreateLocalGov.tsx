@@ -17,6 +17,7 @@ const CreateLocalGov = ({ token, state }: { token: string, state: State[] }) => 
       handleSubmit,
       formState: { errors },
       setError,
+      control,
    } = useForm<CreateLocalGovFormData>({ resolver: zodResolver(CreateStateSchema), });
    const [isLoading, setIsLoading] = useState<boolean>(false);
    const router = useRouter();
@@ -47,16 +48,11 @@ const CreateLocalGov = ({ token, state }: { token: string, state: State[] }) => 
             <SelectFormField<CreateLocalGovFormData>
                id={'state_id'}
                name="state_id"
-               label={"State of origin"}
-               register={register}
+               placeholder={"State of origin"}
+               control={control}
                error={errors.state_id}
                valueAsNumber
-            >
-               <option value={""}>State Option</option>
-               {state && state.map((item: any, i: any) => (
-                  <option key={i} value={item.id}>{item.name}</option>
-               ))}
-            </SelectFormField>
+            />
             <InputFormField<CreateLocalGovFormData>
                type="text"
                id={'lga'}

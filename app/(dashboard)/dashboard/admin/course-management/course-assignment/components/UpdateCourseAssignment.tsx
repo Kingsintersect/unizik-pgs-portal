@@ -51,6 +51,7 @@ const UpdateCourseAssignment = ({
       reset,
       formState: { errors },
       setError,
+      control,
    } = useForm<CourseAssignmentFormData>({ resolver: zodResolver(UpdateCourseAssignmentSchema), });
    const [isLoading, setIsLoading] = useState<boolean>(false);
    const router = useRouter();
@@ -256,18 +257,13 @@ const UpdateCourseAssignment = ({
             <SelectFormField<CourseAssignmentFormData>
                id={'course_category_id'}
                name="course_category_id"
-               label={"Select the Course category"}
-               register={register}
+               placeholder={"Select the Course category"}
+               control={control}
                valueAsNumber
                error={errors.course_category_id}
                handleChange={handleCategoryCourseChange}
                defaultValue={selectedCategoryId}
-            >
-               <option value={""}>Course Category Options</option>
-               {courseCategory && courseCategory.map((item: any, i: any) => (
-                  <option key={i} value={item.id}>{item.short_code}</option>
-               ))}
-            </SelectFormField>
+            />
 
             {/* <div className="overflow-x-auto">
                <Table>

@@ -17,6 +17,7 @@ const CreateCourseCategory = ({ token, faculty, studyLevels, semesters }: { toke
       handleSubmit,
       formState: { errors },
       setError,
+      control,
    } = useForm<CourseCategoryFormData>({ resolver: zodResolver(CreateCourseCategorySchema), });
    const [isLoading, setIsLoading] = useState<boolean>(false);
    const [depatments, setDepatments] = useState<any[]>([]);
@@ -68,55 +69,35 @@ const CreateCourseCategory = ({ token, faculty, studyLevels, semesters }: { toke
             <SelectFormField<CourseCategoryFormData>
                id={'faculty_id'}
                name="faculty_id"
-               label={"Select the Faculty"}
-               register={register}
+               placeholder={"Select the Faculty"}
+               control={control}
                valueAsNumber
                error={errors.faculty_id}
                handleChange={handleFacultyChange}
-            >
-               <option value={""}>Faculty Options</option>
-               {faculty && faculty.map((item: any, i: any) => (
-                  <option key={i} value={item.id}>{item.faculty_name}</option>
-               ))}
-            </SelectFormField>
+            />
             <SelectFormField<CourseCategoryFormData>
                id={'department_id'}
                name="department_id"
-               label={"Select the Department"}
-               register={register}
+               placeholder={"Select the Department"}
+               control={control}
                valueAsNumber
                error={errors.department_id}
-            >
-               <option value={""}>Department Options</option>
-               {depatments && depatments.map((item: any, i: any) => (
-                  <option key={i} value={item.id}>{item.department_name}</option>
-               ))}
-            </SelectFormField>
+            />
             <SelectFormField<CourseCategoryFormData>
                id={'level'}
                name="level"
-               label={"Select the study level"}
-               register={register}
+               placeholder={"Select the study level"}
+               control={control}
                valueAsNumber
                error={errors.level}
-            >
-               <option value={""}>Study Level Options</option>
-               {studyLevels && studyLevels.map((item: any, i: any) => (
-                  <option key={i} value={item.value}>{item.label}</option>
-               ))}
-            </SelectFormField>
+            />
             <SelectFormField<CourseCategoryFormData>
                id={'semester'}
                name="semester"
-               label={"Select the Semester"}
-               register={register}
+               placeholder={"Select the Semester"}
+               control={control}
                error={errors.semester}
-            >
-               <option value={""}>Semester Options</option>
-               {semesters && semesters.map((item: any, i: any) => (
-                  <option key={i} value={item.value}>{item.label}</option>
-               ))}
-            </SelectFormField>
+            />
             <div className="flex justify-center w-full">
                <Button type='submit'>
                   Save New Course

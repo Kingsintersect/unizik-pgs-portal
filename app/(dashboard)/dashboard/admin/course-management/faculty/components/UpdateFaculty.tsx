@@ -8,7 +8,7 @@ import { UpdateSingleFaculty } from '@/app/actions/server.admin';
 import { notify } from '@/contexts/ToastProvider';
 import { baseUrl } from '@/config';
 import { useRouter } from 'next/navigation';
-import { InputFormField, SelectFormField } from '@/components/ui/inputs/FormFields';
+import { InputFormField } from '@/components/ui/inputs/FormFields';
 import { Button } from '@/components/ui/button';
 
 const UpdateFaculty = ({ faculty, token }: { faculty: Faculty, token: string }) => {

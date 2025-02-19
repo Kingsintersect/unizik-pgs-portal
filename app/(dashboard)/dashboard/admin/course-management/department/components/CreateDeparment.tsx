@@ -18,6 +18,7 @@ const CreateDeparment = ({ faculty, token }: { faculty: Faculty[], token: string
       handleSubmit,
       formState: { errors },
       setError,
+      control,
    } = useForm<DeparmentFormData>({ resolver: zodResolver(CreateDepartmentSchema), });
    const [isLoading, setIsLoading] = useState<boolean>(false);
    const router = useRouter();
@@ -48,16 +49,11 @@ const CreateDeparment = ({ faculty, token }: { faculty: Faculty[], token: string
             <SelectFormField<DeparmentFormData>
                id={'parent'}
                name="faculty_id"
-               label={"Select the Faculty"}
-               register={register}
+               placeholder={"Select the Faculty"}
+               control={control}
                valueAsNumber
                error={errors.faculty_id}
-            >
-               <option value={""}>Faculty Option</option>
-               {faculty && faculty.map((item: any, i: any) => (
-                  <option key={i} value={item.id}>{item.faculty_name}</option>
-               ))}
-            </SelectFormField>
+            />
             <InputFormField<DeparmentFormData>
                type="text"
                id={'department_name'}

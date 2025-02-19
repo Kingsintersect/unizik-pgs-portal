@@ -19,6 +19,7 @@ const UpdateLocalGov = ({ token, parent, localGov, state, }: { token: string, pa
       reset,
       formState: { errors },
       setError,
+      control,
    } = useForm<UpdateLocalGovFormData>({ resolver: zodResolver(UpdateStateSchema), });
    const [isLoading, setIsLoading] = useState<boolean>(false);
    const router = useRouter();
@@ -55,16 +56,11 @@ const UpdateLocalGov = ({ token, parent, localGov, state, }: { token: string, pa
             <SelectFormField<UpdateLocalGovFormData>
                id={'state_id'}
                name="state_id"
-               label={"State"}
-               register={register}
+               placeholder={"State"}
+               control={control}
                error={errors.state_id}
                valueAsNumber
-            >
-               <option value={""}>State Option</option>
-               {State && State.map((item: any, i: any) => (
-                  <option key={i} value={item.id}>{item.label}</option>
-               ))}
-            </SelectFormField>
+            />
             <InputFormField<UpdateLocalGovFormData>
                type="text"
                id={'name'}

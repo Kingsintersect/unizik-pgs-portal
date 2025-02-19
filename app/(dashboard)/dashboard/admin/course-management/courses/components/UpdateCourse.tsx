@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { z, ZodType } from 'zod';
 import { ArrowRightIcon } from "lucide-react";
-import { InputFormField, SelectFormField, TextareaFormField } from '@/components/ui/inputs/FormFields';
+import { InputFormField, TextareaFormField } from '@/components/ui/inputs/FormFields';
 import { Button } from '@/components/ui/button';
 
 const UpdateCourse = ({ token, course }: { token: string, course: Course }) => {
