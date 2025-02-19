@@ -14,6 +14,8 @@ import { SessionData } from "@/types/auth"
 import { loginSessionKey } from "@/lib/definitions"
 import { verifySession } from "@/lib/server.utils"
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "UNIZIK-PG-STUDIES - Dashboard",
   description: "Dashboard Overview",

@@ -25,6 +25,7 @@ import { DataTable } from '@/components/ui/datatable/DataTable';
 import { course_assignment } from './course_assignment_table.columns';
 import { loginSessionKey } from '@/lib/definitions';
 
+export const dynamic = "force-dynamic";
 const page = async ({ params, }: { params: { slug: string } }) => {
 
    const session = await verifySession(loginSessionKey);

@@ -5,6 +5,7 @@ import UpdateCourse from '../../components/UpdateCourse';
 import { BreadcrumbResponsive } from '@/components/Breadcrumb';
 import { loginSessionKey } from '@/lib/definitions';
 
+export const dynamic = "force-dynamic";
 
 const page = async ({ params, searchParams }: { params: { id: string }, searchParams: { [key: string]: string | string[] } }) => {
    const id = params.id;

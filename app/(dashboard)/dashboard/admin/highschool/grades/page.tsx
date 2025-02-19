@@ -13,6 +13,7 @@ import { GetListOfSubjectGrade } from '@/app/actions/server.admin'
 import { notify } from '@/contexts/ToastProvider'
 import { loginSessionKey } from '@/lib/definitions';
 
+export const dynamic = "force-dynamic";
 
 const page = async () => {(loginSessionKey);
    const basePath = `${baseUrl}/dashboard/admin/highschool/grades`;

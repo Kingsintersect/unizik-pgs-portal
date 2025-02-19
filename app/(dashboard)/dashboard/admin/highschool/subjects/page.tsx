@@ -11,6 +11,7 @@ import { subjects_columns } from './subjects_table.columns';
 import { GetListOfClassSubjects } from '@/app/actions/server.admin';
 import { notify } from '@/contexts/ToastProvider';
 
+export const dynamic = "force-dynamic";
 const page = async () => {
    const basePath = `${baseUrl}/dashboard/admin/highschool/subjects`;
 

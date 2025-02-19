@@ -5,6 +5,7 @@ import { LucideUsersRound } from 'lucide-react';
 import CustomCard from '@/components/CustomCard';
 import { loginSessionKey } from '@/lib/definitions';
 
+export const dynamic = "force-dynamic";
 const AdminDashboard = async () => {
    const session = await verifySession(loginSessionKey);
    const [users, teachers, students, managers] = await Promise.all([

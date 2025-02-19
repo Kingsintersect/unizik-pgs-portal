@@ -3,6 +3,7 @@ import CreateClassSubject from '../components/CreateClassSubject';
 import { BreadcrumbResponsive } from '@/components/Breadcrumb';
 import { loginSessionKey } from '@/lib/definitions';
 
+export const dynamic = "force-dynamic";
 const Page = async () => {
    const session = await verifySession(loginSessionKey);
 

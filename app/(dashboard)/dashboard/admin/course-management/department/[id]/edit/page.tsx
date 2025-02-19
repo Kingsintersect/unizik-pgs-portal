@@ -6,6 +6,7 @@ import UpdateDeparment from '../../components/UpdateDeparment';
 import { BreadcrumbResponsive } from '@/components/Breadcrumb';
 import { loginSessionKey } from '@/lib/definitions';
 
+export const dynamic = "force-dynamic";
 
 const Page = async ({ params }: { params: { id: string } }) => {
    const id = params.id;

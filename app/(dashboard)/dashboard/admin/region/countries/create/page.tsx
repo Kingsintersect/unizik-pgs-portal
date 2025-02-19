@@ -5,6 +5,7 @@ import { BreadcrumbResponsive } from '@/components/Breadcrumb';
 import CreateCountry from '../components/CreateCountry';
 import { loginSessionKey } from '@/lib/definitions';
 
+export const dynamic = "force-dynamic";
 
 const page = async ({ params }: { params: { id: string } }) => {
    const id = params.id;

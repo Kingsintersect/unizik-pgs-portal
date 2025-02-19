@@ -12,6 +12,7 @@ import { course_category_columns } from './course_category_table.columns';
 import { GetListOfCourseCategories } from '@/app/actions/server.admin';
 import { loginSessionKey } from '@/lib/definitions';
 
+export const dynamic = "force-dynamic";
 
 const page = async () => {
    const session = await verifySession(loginSessionKey);

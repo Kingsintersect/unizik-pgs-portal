@@ -6,7 +6,7 @@ import React from 'react'
 import { BreadcrumbResponsive } from '@/components/Breadcrumb';
 import { loginSessionKey } from '@/lib/definitions';
 
-
+export const dynamic = "force-dynamic";
 
 const breadcrumbItems = [
    { label: 'dashboard', href: '/dashboard/admin' },

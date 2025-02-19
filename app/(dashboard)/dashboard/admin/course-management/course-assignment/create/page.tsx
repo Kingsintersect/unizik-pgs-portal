@@ -7,6 +7,7 @@ import CreateCourseAssignment from '../components/CreateCourseAssignment';
 import { BreadcrumbResponsive } from '@/components/Breadcrumb';
 import { loginSessionKey } from '@/lib/definitions';
 
+export const dynamic = "force-dynamic";
 
 const page = async ({ params }: { params: { id: string } }) => {
    const basePath = `${baseUrl}/dashboard/admin/course-management/course-assignment`;

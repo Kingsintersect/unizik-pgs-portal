@@ -25,6 +25,7 @@ import { DataTable } from '@/components/ui/datatable/DataTable';
 import { department_columns } from './department_table.columns';
 import { loginSessionKey } from '@/lib/definitions';
 
+export const dynamic = "force-dynamic";
 
 const Department = async () => {
    const basePath = `${baseUrl}/dashboard/admin/course-management/department`;
