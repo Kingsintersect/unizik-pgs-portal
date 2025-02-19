@@ -37,7 +37,7 @@ export default function AdminLoginPage() {
             notify({ message: 'Login Successful.', variant: "success", timeout: 5000 })
             if (success.user.role === Roles.ADMIN) router.push(`${baseUrl}/dashboard/admin`)
             if (success.user.role === Roles.STUDENT) router.push(`${baseUrl}/dashboard/student`)
-            router.push("/auth/signin");
+            router.refresh();
         }
     };
 
