@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { X } from "lucide-react";
 import { useAppContext } from "@/contexts/AppContext";
 import { courses, grades } from "@/config";
 
@@ -78,7 +78,7 @@ const ComboBox = ({ identifire }: { identifire: string }) => {
                   <li className="grid grid-cols-1 w-[90%]" key={identifire + sc.subject}>
                      <div className="cursor-pointer flex justify-between gap-5  px-4 py-2 shadow-md rounded-md">
                         <div className="">{sc.subject} - {sc.Grade}</div>
-                        <button onClick={() => handleCancel(index)}><XMarkIcon className="h-5 w-5 cursor-pointer text-red-400" /></button>
+                        <button onClick={() => handleCancel(index)}><X className="h-5 w-5 cursor-pointer text-red-400" /></button>
                      </div>
                   </li>
                ))}

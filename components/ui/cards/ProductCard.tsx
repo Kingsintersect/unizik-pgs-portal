@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import React, { FC, HTMLAttributes, ReactNode } from 'react'
 import Star, { Label } from '../app/Star'
-import cn from '@/lib/cn'
+import {cn}from '@/lib/utils'
 
 // interface IProductImageProps extends HTMLAttributes<HTMLDivElement> {}
 // interface IProductImageProps extends HTMLAttributes<HTMLImageElement> {}

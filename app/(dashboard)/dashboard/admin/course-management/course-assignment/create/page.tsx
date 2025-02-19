@@ -1,15 +1,17 @@
 import { GetListOfCourseCategories, GetListOfCourses } from '@/app/actions/server.admin';
-import CreateCourseAssignment from '@/components/ui/admin/courseAssignment/CreateCourseAssignment';
-import { Breadcrumbs } from '@/components/ui/application/BreadCrumbs'
 import { baseUrl } from '@/config';
-import { verifySession } from '@/lib/dal';
+import { verifySession } from '@/lib/server.utils';
 import { notFound } from 'next/navigation';
 import React from 'react'
+import CreateCourseAssignment from '../components/CreateCourseAssignment';
+import { BreadcrumbResponsive } from '@/components/Breadcrumb';
+import { loginSessionKey } from '@/lib/definitions';
+
 
 const page = async ({ params }: { params: { id: string } }) => {
    const basePath = `${baseUrl}/dashboard/admin/course-management/course-assignment`;
    const id = params.id;
-   const session = await verifySession();
+   const session = await verifySession(loginSessionKey);
 
    const [courses, courseCategory]: any = await Promise.all([
       GetListOfCourses(session.token),
@@ -19,22 +21,24 @@ const page = async ({ params }: { params: { id: string } }) => {
    //    notFound();
    // }
 
+   const breadcrumbItems = [
+      { label: 'dashboard', href: '/dashboard/admin' },
+      {
+         label: 'List Courses',
+         href: `/dashboard/admin/course-management/course-assignment`,
+      },
+      {
+         label: 'Create New Course',
+         href: `/dashboard/admin/course-management/course-assignment/create`,
+         active: true,
+      },
+   ];
+
    return (
       <main className='space-y-10'>
-         <Breadcrumbs
-            breadcrumbs={[
-               { label: 'dashboard', href: '/dashboard/admin' },
-               {
-                  label: 'List Courses',
-                  href: `/dashboard/admin/course-management/course-assignment`,
-               },
-               {
-                  label: 'Create New Course',
-                  href: `/dashboard/admin/course-management/course-assignment/create`,
-                  active: true,
-               },
-            ]}
-         />
+         <div className="p-6">
+            <BreadcrumbResponsive items={breadcrumbItems} itemsToDisplay={3} />
+         </div>
          <div className="w-full bg-white shadow-lg rounded-md px-7 py-20">
             <CreateCourseAssignment basePath={basePath} courses={courses.success.data} courseCategory={courseCategory.success.data} token={session.token} />
          </div>

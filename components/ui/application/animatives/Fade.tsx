@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '@/app/animations.css'; // Import the CSS file
-import cn from '@/lib/cn';
+import {cn}from '@/lib/utils';
 
 type FadeProps = {
    in: boolean;

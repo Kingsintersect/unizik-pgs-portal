@@ -1,4 +1,4 @@
-import cn from "@/lib/cn";
+import {cn}from "@/lib/utils";
 import { AppSkeleton } from "./AppSkeleton";
 
 export function SkeletonCard({ classList }: { classList?: string }) {

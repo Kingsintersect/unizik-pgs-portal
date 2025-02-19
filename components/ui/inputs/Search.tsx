@@ -1,9 +1,10 @@
 
 "use client";
 
-import cn from "@/lib/cn";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { Label, TextInput } from "flowbite-react";
+import {cn}from "@/lib/utils";
+import { SearchCheck } from "lucide-react";
+import { Input } from "../input";
+import { Button } from "../button";
 
 interface SearchProps {
    name: string;
@@ -16,17 +17,19 @@ interface SearchProps {
 
 const Search = ({ name, placeholder, classList,className, value, onChange }: SearchProps) => {
    return (
-      <div className={cn(`max-w-md`, classList)}>
-         <TextInput
-            id={name}
+      <div className={cn("flex w-full max-w-sm items-center space-x-1", classList)}>
+         <Input
             type="text"
-            rightIcon={MagnifyingGlassIcon}
+            name={name}
             placeholder={placeholder}
+            className={className}
             value={value}
             onChange={onChange}
-            className={className}
          />
-      </div>
+         <Button variant="outline" size="icon" color="#23628d">
+            <SearchCheck />
+         </Button>
+    </div>
    );
 }
 

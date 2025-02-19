@@ -1,22 +1,22 @@
-import { GetAmissionApprovedStudentList, GetAmissionRejectedStudentList, GetAppliedStudentList, GetUnappliedStudentList } from '@/app/actions/admin';
-import { verifySession } from '@/lib/dal';
-import { Card } from 'flowbite-react'
-import Image from 'next/image'
-import { HiOutlineUserGroup } from 'react-icons/hi'
+import { FetchAllManagers, FetchAllStudents, FetchAllTeachers, FetchAllUsers } from '@/app/actions/unizikpgs';
+import { verifySession } from '@/lib/server.utils';
+import Image from 'next/image';
+import { LucideUsersRound } from 'lucide-react';
+import CustomCard from '@/components/CustomCard';
+import { loginSessionKey } from '@/lib/definitions';
 
 const AdminDashboard = async () => {
-   const session = await verifySession();
-   const [approvedAdmission, rejectedAdmission, appliedStudents, unappliedStudents]: any = await Promise.all([
-      GetAmissionApprovedStudentList(session.token),
-      GetAmissionRejectedStudentList(session.token),
-      GetAppliedStudentList(session.token),
-      GetUnappliedStudentList(session.token),
+   const session = await verifySession(loginSessionKey);
+   const [users, teachers, students, managers] = await Promise.all([
+      FetchAllUsers(session.token).catch(error => console.error("FetchAllUsers failed:", error)),
+      FetchAllTeachers(session.token).catch(error => console.error("FetchAllTeachers failed:", error)),
+      FetchAllStudents(session.token).catch(error => console.error("FetchAllStudents failed:", error)),
+      FetchAllManagers(session.token).catch(error => console.error("FetchAllManagers failed:", error)),
    ]);
-   const totalAdmitted = approvedAdmission.success.data.length
-   const totalRejected = rejectedAdmission.success.data.length
-   const totalApplied = appliedStudents.success.data.length
-   const totalUnapplied = unappliedStudents.success.data.length
-   const totalStudents = totalAdmitted + totalRejected + totalApplied + totalUnapplied
+   const usersCount = users.success.data.length
+   const teachersCount = teachers.success.data.length
+   const studentCount = students.success.data.length
+   const managersCount = managers.success.data.length
 
    return (
       <section className='w-full text-gray-800 space-y-16'>
@@ -33,58 +33,45 @@ const AdminDashboard = async () => {
             <h1 className='text-3xl text-orange-900 font-bold capitalize'>Student statistics</h1>
             <hr className='border-white' />
             <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-               <Card className=''>
+               <CustomCard className='py-7 px-4'>
                   <div className="flex flex-row w-full justify-between items-center">
                      <div className="basis-1/3">
-                        <HiOutlineUserGroup className='h-16 w-16 text-cyan-700' />
+                        <LucideUsersRound className='h-16 w-16 text-cyan-700' />
                      </div>
                      <div className="basis-2/3">
-                        <div className="flex flex-col gap-8">
-                           <h3 className='text-lg sm:text-xl capitalize text-right font-bold'>Total Student</h3>
-                           <h1 className="text-lg sm:text-4xl font-bold text-right text-orange-800">{totalStudents}</h1>
+                        <div className="flex flex-col gap-5">
+                           <h3 className='text-lg sm:text-xl capitalize text-right font-bold'>Users</h3>
+                           <h1 className="text-lg sm:text-4xl font-bold text-right text-orange-800">{usersCount}</h1>
                         </div>
                      </div>
                   </div>
-               </Card>
-               <Card className=''>
+               </CustomCard>
+               <CustomCard className='py-7 px-4'>
                   <div className="flex flex-row w-full justify-between items-center">
                      <div className="basis-1/3">
-                        <HiOutlineUserGroup className='h-16 w-16 text-cyan-700' />
+                        <LucideUsersRound className='h-16 w-16 text-cyan-700' />
                      </div>
                      <div className="basis-2/3">
-                        <div className="flex flex-col gap-8">
-                           <h3 className='text-xl capitalize text-right font-bold'>Admitted Student</h3>
-                           <h1 className="text-4xl font-bold text-right text-orange-800">{totalAdmitted}</h1>
+                        <div className="flex flex-col gap-5">
+                           <h3 className='text-xl capitalize text-right font-bold'>Students</h3>
+                           <h1 className="text-4xl font-bold text-right text-orange-800">{studentCount}</h1>
                         </div>
                      </div>
                   </div>
-               </Card>
-               <Card className=''>
+               </CustomCard>
+               <CustomCard className='py-7 px-4'>
                   <div className="flex flex-row w-full justify-between items-center">
                      <div className="basis-1/3">
-                        <HiOutlineUserGroup className='h-16 w-16 text-cyan-700' />
+                        <LucideUsersRound className='h-16 w-16 text-cyan-700' />
                      </div>
                      <div className="basis-2/3">
-                        <div className="flex flex-col gap-8">
-                           <h3 className='text-xl capitalize text-right font-bold'>Pending Admission</h3>
-                           <h1 className="text-4xl font-bold text-right text-orange-800">{totalApplied}</h1>
+                        <div className="flex flex-col gap-5">
+                           <h3 className='text-xl capitalize text-right font-bold'>Teachers</h3>
+                           <h1 className="text-4xl font-bold text-right text-orange-800">{teachersCount}</h1>
                         </div>
                      </div>
                   </div>
-               </Card>
-               {/* <Card className=''>
-                  <div className="flex flex-row w-full justify-between items-center">
-                     <div className="basis-1/3">
-                        <HiOutlineUserGroup className='h-16 w-16 text-cyan-700' />
-                     </div>
-                     <div className="basis-2/3">
-                        <div className="flex flex-col gap-8">
-                           <h3 className='text-xl capitalize text-right font-bold'>Rejected Admission</h3>
-                           <h1 className="text-4xl font-bold text-right text-orange-800">150</h1>
-                        </div>
-                     </div>
-                  </div>
-               </Card> */}
+               </CustomCard>
             </div>
          </div>
       </section>

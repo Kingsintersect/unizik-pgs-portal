@@ -1,27 +1,29 @@
-import CreateClassSubject from '@/components/ui/admin/highschool/CreateClassSubject';
-import { Breadcrumbs } from '@/components/ui/application/BreadCrumbs';
-import { verifySession } from '@/lib/dal';
+import { verifySession } from '@/lib/server.utils';
+import CreateClassSubject from '../components/CreateClassSubject';
+import { BreadcrumbResponsive } from '@/components/Breadcrumb';
 
 const Page = async ({ params }: { params: { id: string } }) => {
    const id = params.id;
-   const session = await verifySession();
+   const session = await verifySession(loginSessionKey);
+
+   const breadcrumbItems = [
+      { label: 'dashboard', href: '/dashboard/admin' },
+      {
+         label: 'List Class Subjects',
+         href: `/dashboard/admin/highschool/subjects`,
+      },
+      {
+         label: 'Create New Subjects',
+         href: `/dashboard/admin/highschool/subjects/create`,
+         active: true,
+      },
+   ];
 
    return (
       <main className='space-y-10'>
-         <Breadcrumbs
-            breadcrumbs={[
-               { label: 'dashboard', href: '/dashboard/admin' },
-               {
-                  label: 'List Class Subjects',
-                  href: `/dashboard/admin/highschool/subjects`,
-               },
-               {
-                  label: 'Create New Subjects',
-                  href: `/dashboard/admin/highschool/subjects/create`,
-                  active: true,
-               },
-            ]}
-         />
+         <div className="p-6">
+            <BreadcrumbResponsive items={breadcrumbItems} itemsToDisplay={3} />
+         </div>
          <div className="w-full bg-white shadow-lg rounded-md px-7 py-20">
             <CreateClassSubject token={session.token} />
          </div>

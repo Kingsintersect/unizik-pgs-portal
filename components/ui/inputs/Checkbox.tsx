@@ -1,4 +1,4 @@
-import cn from '@/lib/cn'
+import {cn}from '@/lib/utils'
 import React, { ReactNode } from 'react'
 
 export const Checkbox1 = () => {

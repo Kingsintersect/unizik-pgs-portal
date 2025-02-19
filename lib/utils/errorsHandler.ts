@@ -1,4 +1,3 @@
-import { status } from "nprogress";
 
 export function handleHttpError(error: any, message = "", requestType = ""): object {
    const msg = (typeof error.response?.data === 'object'

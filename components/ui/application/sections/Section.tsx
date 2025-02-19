@@ -1,4 +1,4 @@
-import cn from '@/lib/cn'
+import {cn}from '@/lib/utils'
 import React, { ReactNode } from 'react'
 
 export const Section = ({ title, highlight, classList, style = {}, children }: { title: string, highlight?: string, classList?: string, style?: {}, children: ReactNode }) => {

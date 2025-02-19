@@ -1,21 +1,19 @@
 import Header from '@/components/Header';
 import AppLogo from '@/components/ui/application/AppLogo';
 import { Section } from '@/components/ui/application/sections/Section';
-import { Metadata } from 'next';
+import { Metadata, NextPage } from 'next';
 import React, { ReactNode } from 'react'
 
 export const metadata: Metadata = {
-  title: "ESUT - Login Form",
+  title: "UNIZIK-PG-STUDIES - Login Form",
   description: "Login to your dashboard to continue your education",
 };
 
 type LayoutProps = {
-   params: { slug: string },
-   searchParams: { [key: string]: string },
    children: ReactNode
 }
 
-const Layout = ({ params, searchParams, children }: LayoutProps) => {
+const Layout: NextPage<LayoutProps> = ({ children }: LayoutProps) => {
 
    return (
       <main className='account'>
@@ -26,16 +24,16 @@ const Layout = ({ params, searchParams, children }: LayoutProps) => {
                      <div className="flex h-full">
                      <div className="md:basis-2/3 hidden md:block">
                         <div className="flex items-center h-full justify-center">
-                           <AppLogo image_url={'/logo/esut-logo-favicon.svg'} classList='' Img_container_style='w-52 h-52' />
+                           <AppLogo image_url={'/logo/logo.svg'} classList='' Img_container_style='w-52 h-52' />
                         </div>
                      </div>
                      <div className="w-full sm:basis-3/3 md:basis-1/3 bg-white">
                         <div className="flex flex-col items-center justify-center h-full px-7 sm:px-5 md:px-10">
                            <div className="w-full mb-10 space-y-4 text-left">
-                              <h1 className="text-5xl	font-bold text-orange-800">
+                              <h1 className="text-5xl	font-bold text-[#23628d]">
                                  LOGIN
                               </h1>
-                              <p className="text-lg ">Please sign-in to your account for more adventure</p>
+                              <p className="text-lg text-[#d35401]">Please sign-in to your account for more adventure</p>
                            </div>
                            {children}
                         </div>

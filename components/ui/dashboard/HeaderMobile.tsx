@@ -3,7 +3,7 @@ import { usePathname } from "next/navigation"
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { motion, useCycle } from "framer-motion";
 import Link from "next/link";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon } from "lucide-react";
 
 const sidebar = {
    open: (height = 1000) => ({

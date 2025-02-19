@@ -1,16 +1,17 @@
 import { GetCoursesAssignedToACategory, GetListOfCourseCategories, GetListOfCourses } from '@/app/actions/server.admin';
-import UpdateCourseAssignment from '@/components/ui/admin/courseAssignment/UpdateCourseAssignment';
-import { Breadcrumbs } from '@/components/ui/application/BreadCrumbs';
 import { baseUrl } from '@/config';
-import { verifySession } from '@/lib/dal';
-import { notFound } from 'next/navigation';
+import { verifySession } from '@/lib/server.utils';
 import React from 'react';
+import UpdateCourseAssignment from '../../components/UpdateCourseAssignment';
+import { BreadcrumbResponsive } from '@/components/Breadcrumb';
+import { loginSessionKey } from '@/lib/definitions';
 
-const page = async ({ params, searchParams }: { params: { id: string }, searchParams: { [key: string]: string } }) => {
+    
+const page = async ({ params, searchParams }: { params: { id: string }, searchParams: { [key: string]: string | string[] } }) => {
    const basePath = `${baseUrl}/dashboard/admin/course-management/course-assignment`;
    const { facultyId, departmentId } = searchParams;
    const id = params.id;
-   const session = await verifySession();
+   const session = await verifySession(loginSessionKey);
 
    const [courses, courseCategory, courseAssingnments]: any = await Promise.all([
       GetListOfCourses(session.token),
@@ -18,22 +19,16 @@ const page = async ({ params, searchParams }: { params: { id: string }, searchPa
       GetCoursesAssignedToACategory(id, session.token),
    ]);
 
+   const breadcrumbItems = [
+      { href: "'/dashboard/admin'", label: "Dashboard" },
+      { href: "/dashboard/admin/course-management/course-assignment", label: "Course Assignments" },
+      { href: `/dashboard/admin/course-management/course-assignment/${id}/edit`, label: "Edit Course Assignment" },
+   ];
    return (
       <main className='space-y-10'>
-         <Breadcrumbs
-            breadcrumbs={[
-               { label: 'dashboard', href: '/dashboard/admin' },
-               {
-                  label: 'List Course Assignments',
-                  href: `/dashboard/admin/course-management/course-assignment`,
-               },
-               {
-                  label: 'Edit Course Assignment',
-                  href: `/dashboard/admin/course-management/course-assignment/${id}/edit`,
-                  active: true,
-               },
-            ]}
-         />
+         <div className="p-6">
+            <BreadcrumbResponsive items={breadcrumbItems} itemsToDisplay={3} />
+        </div>
          <div className="w-full bg-white shadow-lg rounded-md px-7 py-20">
             <UpdateCourseAssignment
                basePath={basePath}

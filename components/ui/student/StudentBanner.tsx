@@ -1,8 +1,7 @@
 "use client";
-import { Banner, Button } from "flowbite-react";
-import { HiOutlineClipboardCopy } from "react-icons/hi";
+import { ClipboardCopy } from "lucide-react";
 import { useEffect, useState } from "react";
-import AdmissionDeniedBanner from "./AdmissionDeniedBanner";
+import { Button } from "../button";
 
 const StudentBanner = ({ student }: { student: StudentType }) => {
    const [isClient, setIsClient] = useState(false);
@@ -24,9 +23,6 @@ const StudentBanner = ({ student }: { student: StudentType }) => {
    }
    return (
       <>
-         {student.admission_status === "not admitted" ?
-            <AdmissionDeniedBanner statement={student.reason_for_denial as string} />
-            :
             <Banner>
                <div className="flex w-full flex-col justify-between border-b border-gray-200 bg-gray-50 p-4 dark:border-gray-600 dark:bg-gray-700 md:flex-row my-10 px-10 py-16 rounded-md">
                   <div className="mb-4 md:mb-0 md:mr-4">
@@ -45,13 +41,13 @@ const StudentBanner = ({ student }: { student: StudentType }) => {
                                     <div className="text-center text-xl text-orange-800 font-bold">REG-NUMBER</div>
                                     <div className="text-center text-2xl mt-3 mb-4 px-7 group-hover:text-orange-600">{student.reg_number}</div>
                                  </div>
-                                 <Button onClick={handleCopy} size={"xs"} pill>
-                                    <HiOutlineClipboardCopy className="mr-2 h-4 w-4" /> {copied ? "copied" : "click to copy"}
+                                 <Button onClick={handleCopy} variant={"outline"} size={"sm"}>
+                                    <ClipboardCopy className="mr-2 h-4 w-4" /> {copied ? "copied" : "click to copy"}
                                  </Button>
                               </> :
                               <>
                                  <div className="text-2xl">NO REG-NUMBER</div>
-                                 <Button size={"xs"}>
+                                 <Button size={"sm"}>
                                     click to continue registration
                                  </Button>
                               </>
@@ -61,7 +57,6 @@ const StudentBanner = ({ student }: { student: StudentType }) => {
                   </div>
                </div>
             </Banner>
-         }
       </>
 
    );
@@ -69,3 +64,6 @@ const StudentBanner = ({ student }: { student: StudentType }) => {
 
 export default StudentBanner
 
+const Banner: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+   return <div>{children}</div>;
+}

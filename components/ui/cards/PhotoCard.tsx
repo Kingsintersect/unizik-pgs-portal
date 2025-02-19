@@ -1,30 +1,81 @@
+import {cn}from '@/lib/utils'
 import Image from 'next/image'
 import React from 'react'
+import { ArrowRightSvg, Coinbase, MailSvg, PhoneSvg } from '../svg/Svgs';
+import Link from 'next/link';
 
-const PhotoCard = () => {
+type Lecturer = {
+    image_url: string;
+    name: string;
+    email: string;
+    phone: string;
+}
+
+interface PhotoCardProps {
+    url?: string;
+    image_url: string;
+    title: string;
+    code: string
+    user: Lecturer;
+}
+
+const PhotoCard: React.FC<PhotoCardProps> = ({ url, image_url, title, user, code, ...props }) => {
     return (
-
-
-        <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            <a href="#">
-                <div className="w-[100px] h-[100px]">
-                    <Image fill style={{ objectFit: "cover" }} className="rounded-t-lg" src="/pictures/nature-1.jpg" alt="Image" />
+        <Link href={url ?? "#"} className="block group max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:cursor-pointer">
+            {/* <div className="group-hover:bg-red-400 "> */}
+                <div className={cn("relative w-full group-hover:px-20 h-[200px] scale-100 group-hover:bg-red-400 transition-all duration-700 ease-in-out 0s group-hover:scale-90")}>
+                    <Image
+                        src={image_url}
+                        style={{ objectFit: "contain" }}
+                        alt={"PHOTO IMAGE"}
+                        fill
+                    />
                 </div>
-            </a>
+            {/* </div> */}
             <div className="p-5">
-                <a href="#">
-                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Noteworthy technology acquisitions 2021</h5>
-                </a>
-                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
-                <a href="#" className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    Read more
-                    <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
-                    </svg>
-                </a>
+                <h5 className="mb-2 text-base font-bold tracking-tight text-[#23628d] ">
+                    {title}
+                    <br />
+                    <span className="text-[#d35401]">{code}</span>
+                </h5>
+                <div className="flex items-center justify-between gap-5">
+                    <div className="font-bold text-2xl text-gray-700 size-14 grow flex items-center">
+                    {user.name}
+                    </div>
+                    <div className="relative p-5 size-14 grow-0 border border-gray-200 rounded-sm">
+                        <Image
+                            src={user.image_url}
+                            style={{ objectFit: "contain" }}
+                            alt={"PHOTO IMAGE"}
+                            fill
+                        />
+                    </div>
+                </div>
             </div>
-        </div>
-
+            <hr className='border-t-red-400 mb-3' />
+            <div className="px-5">
+                <ul className="my-2 space-y-1">
+                    <li>
+                        <div className="flex items-center px-3 py-2 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow">
+                            <MailSvg/>
+                            <span className="flex-1 ms-3 whitespace-nowrap">{user.email}</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div className="flex items-center px-3 py-2 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow">
+                            <PhoneSvg/>
+                            <span className="flex-1 ms-3 whitespace-nowrap"><span className="text-2xl">+</span>{user.phone}</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div className="p-3">
+                <div className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-[#23628d] rounded-lg hover:bg-[#155a89] group-hover:bg-[#d35401]">
+                    View Course
+                    <ArrowRightSvg/>
+                </div>
+            </div>
+        </Link>
     )
 }
 

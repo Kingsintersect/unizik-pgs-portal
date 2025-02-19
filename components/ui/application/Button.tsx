@@ -1,7 +1,7 @@
 import React, { ButtonHTMLAttributes, FC, ReactNode } from 'react';
 import { VariantProps, cva } from 'class-variance-authority';
 import Spinner from './Spinner';
-import cn from '@/lib/cn';
+import {cn}from '@/lib/utils';
 
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {

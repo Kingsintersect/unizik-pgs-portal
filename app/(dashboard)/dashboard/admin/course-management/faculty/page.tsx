@@ -1,76 +1,119 @@
-import { GetListOfFaculties } from '@/app/actions/server.admin';
-import FacultyTable from '@/components/ui/admin/faculty/FacultyTable';
-import AppPagination from '@/components/ui/application/AppPagination';
-import { InvoicesTableSkeleton } from '@/components/ui/application/suspence/Skeletons';
-import Search from '@/components/ui/inputs/Search';
-import { baseUrl } from '@/config';
-import { verifySession } from '@/lib/dal';
-import { PlusIcon } from '@heroicons/react/24/outline';
-import { Button, Card, Select } from 'flowbite-react';
-import Link from 'next/link';
-import React, { Suspense } from 'react';
 
+"use client";
+import { baseUrl } from '@/config';
+import { verifySession } from '@/lib/server.utils';
+import { PlusIcon } from 'lucide-react';
+import Link from 'next/link';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Button } from "@/components/ui/button"
+import SelectMenu from '@/components/SelectMenu';
+import CustomCard from '@/components/CustomCard';
+import FacultyTable from './components/FacultyTable';
+import { GetListOfFaculties } from '@/app/actions/server.admin';
+import Spinner from '@/components/ui/application/Spinner';
+import { DataTable } from '@/components/ui/datatable/DataTable';
+import { faculty_columns } from './faculty_table.columns';
+import { Card } from '@/components/ui/card';
+import ExportDropdown from '@/components/ExportDropdown';
+import Search from '@/components/ui/inputs/Search';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { filterData } from '@/lib/utils';
 export const dynamic = 'force-dynamic';
 
-const Faculty = async () => {
-   const session = await verifySession();
+const Faculty = () => {
+   const [faculties, setFaculties] = useState<any[]>([]);
+   const [filter, setFilter] = useState("ALL");
+   const [searchQuery, setSearchQuery] = useState("");
+   const [loading, setLoading] = useState(true);
+   const [error, setError] = useState<string | null>(null);
    const basePath = `${baseUrl}/dashboard/admin/course-management/faculty`;
-   let descendingData: any[]
 
-   const { error, success }: any = await new Promise((resolve) => resolve(GetListOfFaculties()));
-   if (success) {
-      const ascendingData = [...success.data].sort((a, b) => a.id - b.id);
-      descendingData = [...success.data].sort((a, b) => b.id - a.id);
-   } else {
-      descendingData = [];
-   }
+   // Function to fetch faculties
+   const fetchFaculties = async () => {
+      setLoading(true);
+      setError(null); // Reset error state
+
+      try {
+         const { success, error } = await GetListOfFaculties();
+         if (success) {
+            const sortedData = success.data.sort((a: any, b: any) => b.id - a.id);
+            setFaculties(sortedData);
+         } else if (error) {
+            setError(error.message || "Failed to fetch faculties");
+         }
+      } catch (err) {
+         setError("An unexpected error occurred.");
+      } finally {
+         setLoading(false);
+      }
+   };
+
+   // Fetch faculties on mount
+   useEffect(() => {
+      let isMounted = true;
+         fetchFaculties().catch(console.error);
+         return () => { isMounted = false; }; // Cleanup on unmount
+   }, []);
+
+   const filteredData = useMemo(() =>
+      filterData(faculties, "status", filter, ["faculty_name"], searchQuery),
+      [filter, searchQuery, faculties]
+   );   
 
    return (
       <>
-         <div className="grid sm:grid-cols-2 gap-3 md:gap-10">
-            <div className="search">
-               <Search name={'search'} placeholder='Search for a faculty' />
-            </div>
-            <div className="search flex justify-end">
-               <Select id="countries" required>
-                  <option>Name</option>
-               </Select>
-            </div>
-         </div>
-         <Card className="mt-7">
-            <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-7">
-               List Of Faculty
-            </h5>
+         <Card className="mt-7 p-10">
+            <header className="w-full flex items-center justify-between text-orange-500 font-bold">
+               <h5 className="text-2xl font-bold tracking-tight text-[#23628d] dark:text-white mb-7">
+                  All Users
+               </h5>
+               {faculties && faculties.length > 0 && (
+                  <ExportDropdown
+                     data={faculties}
+                     columns={
+                        [
+                           'faculty_name',
+                        ]
+                     }
+                  />
+               )}
+            </header>
             <div className="font-normal text-gray-700 dark:text-gray-400 space-y-10 mb-7">
-               <div className="flex items-center justify-between">
-                  <div className="flex gap-2 items-center">
-                     <span>Show</span>
-                     <Select id="countries">
-                        <option>10</option>
-                        <option>20</option>
-                        <option>30</option>
-                        <option>40</option>
-                        <option>50</option>
+               <div className="grid sm:grid-cols-2 gap-3 md:gap-10">
+                  <div className="search">
+                     <Search
+                        name={'search'}
+                        placeholder='Search by name...'
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="p-3 rounded w-full"
+                     />
+                  </div>
+                  <div className="search flex justify-end gap-5">
+                     <Select
+                        onValueChange={(value: string) => setFilter(value)} 
+                        defaultValue={filter}
+                     >
+                        <SelectTrigger className='w-[280px]'>
+                           <SelectValue placeholder="SelectFilter Key" />
+                        </SelectTrigger>
+                        <SelectContent>
+                           <SelectItem value="ALL">All Users</SelectItem>
+                           <SelectItem value="1">Active</SelectItem>
+                           <SelectItem value="0">InActive</SelectItem>
+                        </SelectContent>
                      </Select>
-                     <span>entries</span>
-                  </div>
-                  <div className="">
-                     <Link href={`${basePath}/create`} >
-                        <Button>
-                           <PlusIcon className="h-5 md:ml-4" />
-                           Create New Category
-                        </Button>
-                     </Link>
                   </div>
                </div>
-               <div className="">
-                  <Suspense fallback={<InvoicesTableSkeleton />}>
-                     <FacultyTable basePath={basePath} faculty={descendingData} token={session.token} />
-                  </Suspense>
+               <div className="grid grid-cols-1">
+                  <DataTable columns={faculty_columns} data={filteredData} />
                </div>
-            </div>
-            <div className="flex items-center justify-center">
-               <AppPagination />
             </div>
          </Card>
       </>

@@ -7,13 +7,13 @@ import React, { useEffect } from 'react';
 
 const GetUser = () => {
    const { token } = useToken();
-   const { state, setStudent } = useAppContext();
+   const { state, setUser } = useAppContext();
 
    useEffect(() => {
       const fetchUser = async () => {
          const { error, success } = await getUser();
          if (success) {
-            setStudent(success.user);
+            setUser(success.user);
             return;
          }
          if (error) {

@@ -1,13 +1,13 @@
 "use client";
-import { Card } from 'flowbite-react';
-import { HiOutlineCheckCircle, HiOutlineExclamation, HiOutlineXCircle } from "react-icons/hi";
+import CustomCard from '@/components/CustomCard';
+import { CheckCircle, CircleHelp, XCircle } from "lucide-react";
 
 type AdmissionStatusType = 'admitted' | 'pending' | 'not admitted';
 
 export function AdmissionStatus({ admissionStatus }: { admissionStatus: AdmissionStatusType }) {
    const status = admissionStatusConfig[admissionStatus];
    return (
-      <Card>
+      <CustomCard>
          <div className="grid grid-cols-1">
             <div className="text-lg MB-5">ADMISSION</div>
             {status && (
@@ -19,7 +19,7 @@ export function AdmissionStatus({ admissionStatus }: { admissionStatus: Admissio
                </>
             )}
          </div>
-      </Card>
+      </CustomCard>
    )
 }
 
@@ -27,7 +27,7 @@ type statusType = 1 | 0;
 export function StatusCheckCaard({ dataStatus, admission, title, url = "#" }: { dataStatus: statusType, admission: AdmissionStatusType, title: string, url?: string }) {
    const status = statusConfig[dataStatus];
    return (
-      <Card>
+      <CustomCard>
          <a href={`${(admission === "admitted" && dataStatus == 0) ? url : "#"}`}>
             <div className="grid grid-cols-1">
                <div className="text-lg MB-5">{title}</div>
@@ -41,7 +41,7 @@ export function StatusCheckCaard({ dataStatus, admission, title, url = "#" }: { 
                )}
             </div>
          </a>
-      </Card>
+      </CustomCard>
    )
 }
 
@@ -51,13 +51,13 @@ const statusConfig = {
       iconColor: "text-green-400 dark:text-green-200",
       textColor: "text-green-500",
       message: "Paid",
-      icon: HiOutlineCheckCircle,
+      icon: CheckCircle,
    },
    0: {
       iconColor: "text-red-400 dark:text-red-200",
       textColor: "text-red-500",
       message: "Not Paid",
-      icon: HiOutlineXCircle
+      icon: XCircle
    }
 }
 
@@ -66,18 +66,18 @@ const admissionStatusConfig = {
       iconColor: "text-green-400 dark:text-green-200",
       textColor: "text-green-500",
       message: "Admission Granted",
-      icon: HiOutlineCheckCircle,
+      icon: CheckCircle,
    },
    pending: {
       iconColor: "text-cyan-400 dark:text-cyan-200",
       textColor: "text-gray-500",
       message: "Admission Pending",
-      icon: HiOutlineExclamation
+      icon: CircleHelp
    },
    "not admitted": {
       iconColor: "text-red-400 dark:text-red-200",
       textColor: "text-red-500",
       message: "Admission Pending",
-      icon: HiOutlineXCircle
+      icon: XCircle
    }
 };

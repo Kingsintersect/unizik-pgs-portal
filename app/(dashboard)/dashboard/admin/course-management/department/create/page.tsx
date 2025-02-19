@@ -1,29 +1,33 @@
 import { GetListOfFaculties } from '@/app/actions/server.admin';
-import CreateDeparment from '@/components/ui/admin/department/CreateDeparment';
-import { Breadcrumbs } from '@/components/ui/application/BreadCrumbs';
-import { verifySession } from '@/lib/dal';
+import CreateDeparment from '@/app/(dashboard)/dashboard/admin/course-management/department/components/CreateDeparment';
+import { verifySession } from '@/lib/server.utils';
+import { BreadcrumbResponsive } from '@/components/Breadcrumb';
+import { loginSessionKey } from '@/lib/definitions';
+
 
 const Page = async ({ params }: { params: { id: string } }) => {
    const id = params.id;
-   const session = await verifySession();
+   const session = await verifySession(loginSessionKey);
    const { error, success }: any = await new Promise((resolve) => resolve(GetListOfFaculties()));
+
+   const breadcrumbItems = [
+      { label: 'dashboard', href: '/dashboard/admin' },
+      {
+         label: 'List Department',
+         href: `/dashboard/admin/course-management/department`,
+      },
+      {
+         label: 'Create New Department',
+         href: `/dashboard/admin/course-management/department/create`,
+         active: true,
+      },
+   ];
 
    return (
       <main className='space-y-10'>
-         <Breadcrumbs
-            breadcrumbs={[
-               { label: 'dashboard', href: '/dashboard/admin' },
-               {
-                  label: 'List Department',
-                  href: `/dashboard/admin/course-management/department`,
-               },
-               {
-                  label: 'Create New Department',
-                  href: `/dashboard/admin/course-management/department/create`,
-                  active: true,
-               },
-            ]}
-         />
+         <div className="p-6">
+            <BreadcrumbResponsive items={breadcrumbItems} itemsToDisplay={3} />
+         </div>
          <div className="w-full bg-white shadow-lg rounded-md px-7 py-20">
             <CreateDeparment faculty={success.data} token={session.token} />
          </div>

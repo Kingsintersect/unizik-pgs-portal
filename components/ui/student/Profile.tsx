@@ -2,21 +2,55 @@
 import { GetStudentStudyAccount } from "@/app/actions/student"
 import { useAppContext } from "@/contexts/AppContext";
 import { Key, useEffect, useState } from "react";
-import StudentCreateAccount from "./StudentCreateAccount";
-import { Button, Card, Table } from "flowbite-react";
-import { HiOutlineBookOpen } from 'react-icons/hi';
 import { useRouter } from "next/navigation";
 import { lmsLoginUrl } from "@/config";
 import Image from "next/image";
-import { HiOutlineClipboardCopy } from "react-icons/hi";
+import { ClipboardCheck, ClipboardList, CircleUserRound, BookOpenText, LayoutDashboard } from "lucide-react";
 import { notify } from "@/contexts/ToastProvider";
-import AdmissionDeniedBanner from "./AdmissionDeniedBanner";
 
-import { Tabs } from "flowbite-react";
-import { HiAdjustments, HiClipboardList, HiUserCircle } from "react-icons/hi";
-import { MdDashboard } from "react-icons/md";
 import { GetAllCoursesInACategory } from "@/app/actions/server.admin";
 import useToken from "@/hook/useToken";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "../button";
+import CustomCard from "@/components/CustomCard";
+import { ColumnDef } from "@tanstack/react-table";
+import { DataTableCheckboxColumn, DataTableColumnHeader } from "../datatable/DataTableColumnHeader";
+import { ActionMenu } from "../datatable/ActionMenu";
+import { DataTable } from "../datatable/DataTable";
+
+
+export type ProfileTableColum = {
+    id: string
+    course_code: string
+    course_title: string
+    credit_load: string
+}
+
+export const profile_table: ColumnDef<ProfileTableColum>[] = [
+    DataTableCheckboxColumn<ProfileTableColum>(),
+    {
+        accessorKey: "course_code",
+        header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Course Code" />
+        ),
+    },
+    {
+        accessorKey: "course_title",
+        header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Course Title" />
+        ),
+    },
+    {
+        accessorKey: "credit_load",
+        header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Credit Load" />
+        ),
+    },
+    {
+        id: "actions",
+        cell: ({ row }) => <ActionMenu row={row.original} onCopy={(id) => navigator.clipboard.writeText(id)} />,
+    },
+]
 
 type ProfileType = {
    id: number;
@@ -31,7 +65,7 @@ type ProfileType = {
 const Profile = () => {
    const { state } = useAppContext();
    const router = useRouter();
-   const student = state.student;
+   const student = state.user;
    const [profile, setProfile] = useState<Profile | null>(null);
    const [courses, setCourses] = useState<any | null>(null);
    const [isLoading, setIsLoading] = useState(false);
@@ -102,15 +136,21 @@ const Profile = () => {
    }
 
    return (
-      <>
-         {student.admission_status === "not admitted" ?
-            <AdmissionDeniedBanner statement={student.reason_for_denial as string} />
-            :
+      // <>
+      //    {student.admission_status === "not admitted" ?
+      //       <div>empty not admitted</div>
+      //       :
             <>
                {profile ?
                   <>
-                     <Tabs aria-label="Tabs with icons" variant="underline">
-                        <Tabs.Item active title="Profile Data" icon={MdDashboard}>
+                     <Tabs defaultValue="profile-data" className="w-[400px]">
+                        <TabsList>
+                           <TabsTrigger value="profile-data">
+                              <LayoutDashboard/>
+                              Account
+                           </TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="profile-data">
                            <div className='grid md:grid-cols-3 text-gray-700 gap-10 md:gap-20'>
                               <div className="col-span-full md:col-span-1">
                                  <div className="w-full flex flex-col items-center justify-center space-y-7 border px-5 py-10 rounded-md">
@@ -132,19 +172,18 @@ const Profile = () => {
                                  </div>
                               </div>
                               <div className="col-span-full md:col-span-2 space-y-10">
-                                 <Card className="w-full">
-                                    <h5 className="text-3xl font-bold tracking-tight text-gray-700">
-                                       Study Credentials
-                                    </h5>
-                                    <p className="font-normal text-gray-700">
-                                       Log into your study portal with these credentials.
-                                    </p>
+                                 <CustomCard 
+                                    className="w-full"
+                                    title="Study Credentials"
+                                    titleClassName="text-3xl font-bold tracking-tight text-gray-700"
+                                    description="Log into your study portal with these credentials."
+                                 >                                    
                                     <div className="space-y-5 bg-white p-5 py-10">
                                        <div className="grid grid-cols-3 text-lg gap-5 rounded-md w-full">
                                           <div className="col-span-1 font-semibold text-orange-800">username</div>
                                           <div className="col-span-1 text-gray-600">{profile.reg_number}</div>
-                                          <Button className="col-span-1" onClick={() => handleCopy()} size={"xs"} pill>
-                                             <HiOutlineClipboardCopy className="mr-2 h-4 w-4" /> {copied ? "copied" : "click to copy"}
+                                          <Button className="col-span-1" onClick={() => handleCopy()} size={"sm"} variant={"outline"}>
+                                             <ClipboardCheck className="mr-2 h-4 w-4" /> {copied ? "copied" : "click to copy"}
                                           </Button>
                                        </div>
                                        <div className="grid grid-cols-3 text-lg gap-5 rounded-md w-full">
@@ -170,39 +209,19 @@ const Profile = () => {
                                        </div>
                                        <div className=""><hr /></div>
                                     </div>
-                                 </Card>
-                                 <Card className="w-full">
-                                    <h5 className="text-3xl font-bold tracking-tight text-gray-700">
-                                       Course List
-                                    </h5>
-                                    <p className="font-normal text-gray-700 capitalize text-lg">
-                                       First Semeter - First Year -courses
-                                    </p>
+                                 </CustomCard>
+                                 <CustomCard 
+                                    className="w-full"
+                                    title="Course List"
+                                    titleClassName="text-3xl font-bold tracking-tight text-gray-700"
+                                    description="First Semeter - First Year -courses"
+                                 >                                    
                                     <div className="">
-                                       <div className="overflow-x-auto">
-                                          <Table>
-                                             <Table.Head>
-                                                <Table.HeadCell></Table.HeadCell>
-                                                <Table.HeadCell>Course Code</Table.HeadCell>
-                                                <Table.HeadCell>Course Title</Table.HeadCell>
-                                                <Table.HeadCell>Credit Load</Table.HeadCell>
-                                             </Table.Head>
-                                             <Table.Body className="divide-y">
-                                                {courses && courses.data.map((course: any, i: Key | null | undefined) => (
-                                                   <Table.Row key={i} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                                                      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                                         <HiOutlineBookOpen className="h-8 w-8 text-cyan-800" />
-                                                      </Table.Cell>
-                                                      <Table.Cell>{course.course_code}</Table.Cell>
-                                                      <Table.Cell>{course.course_title}</Table.Cell>
-                                                      <Table.Cell>{course.credit_load}</Table.Cell>
-                                                   </Table.Row>
-                                                ))}
-                                             </Table.Body>
-                                          </Table>
+                                       <div className="overflow-x-auto">                                          
+                                          <DataTable columns={profile_table} data={courses.data} />
                                        </div>
                                     </div>
-                                 </Card>
+                                 </CustomCard>
                               </div>
                               <div className="col-span-full">
                                  <div className="flex items-center justify-center p-5">
@@ -210,51 +229,23 @@ const Profile = () => {
                                  </div>
                               </div>
                            </div>
-                        </Tabs.Item>
-                        {/* <Tabs.Item title="Register Courses" icon={HiAdjustments}>
-                           <Card href="#" className="w-full">
-                              <h5 className="text-3xl font-bold tracking-tight text-gray-700">
-                                 Course List
-                              </h5>
-                              <p className="font-normal text-gray-700 capitalize text-lg">
-                                 First Semeter - First Year -courses
-                              </p>
-                              <div className="">
-                                 <div className="px-4 py-2 bg-slate-200  flex items-center gap-5">
-                                    <HiOutlineBookOpen className="h-8 w-8 text-cyan-800" />
-                                    <div className="font-semibold text-xl">GSS-101 - Use of English</div>
-                                 </div>
-                                 <div className="px-4 py-2 bg-slate-200  flex items-center gap-5">
-                                    <HiOutlineBookOpen className="h-8 w-8 text-cyan-800" />
-                                    <div className="font-semibold text-xl">GSS 104 - History and Philosophy of  Science</div>
-                                 </div>
-                                 <div className="px-4 py-2 bg-slate-200  flex items-center gap-5">
-                                    <HiOutlineBookOpen className="h-8 w-8 text-cyan-800" />
-                                    <div className="font-semibold text-xl">GSS 107 - Nigerian People and Culture</div>
-                                 </div>
-                                 <div className="px-4 py-2 bg-slate-200  flex items-center gap-5">
-                                    <HiOutlineBookOpen className="h-8 w-8 text-cyan-800" />
-                                    <div className="font-semibold text-xl">ACC 101 - Introduction to Accounting</div>
-                                 </div>
-                                 <div className="px-4 py-2 bg-slate-200  flex items-center gap-5">
-                                    <HiOutlineBookOpen className="h-8 w-8 text-cyan-800" />
-                                    <div className="font-semibold text-xl">SOC 101 - Introduction to Sociology I</div>
-                                 </div>
-                              </div>
-                           </Card>
-                        </Tabs.Item> */}
+                        </TabsContent>
                      </Tabs>
                   </>
                   : <>
-                     <Tabs aria-label="Tabs with icons" variant="underline">
-                        <Tabs.Item title="Study Profile" icon={HiUserCircle}>
-                           <StudentCreateAccount />
-                        </Tabs.Item>
+                     <Tabs defaultValue="study-profile" className="w-[400px]">
+                        <TabsList>
+                           <TabsTrigger value="study-profile">
+                              <CircleUserRound/>
+                              Study Account
+                           </TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="study-profile">Make changes to your study account here.</TabsContent>
                      </Tabs>
                   </>}
             </>
-         }
-      </>
+      //    }
+      // </>
 
    )
 }

@@ -9,13 +9,13 @@ const Header = () => {
 		<header className="absolute top-0 left-0 right-0 w-full z-50 bg-transparent flex flex-wrap justify-between items-center px-4 py-2">
 			<div className="flex w-full flex-wrap justify-between items-center">
 				<div
-				className="text-3xl font-bold text-yellow-500 hover:opacity-50 cursor-pointer mx-auto sm:mx-0"
+				className="text-3xl font-bold text-[#23628d] hover:opacity-50 cursor-pointer mx-auto sm:mx-0"
 				>
 					<AppLogo
-						image_url={'/logo/esut-logo-favicon.svg'}
+						image_url={'/logo/logo.svg'}
 						classList=''
 						Img_container_style='w-10 h-10'
-						logo_text={"ESUT Admission Portal"}
+						logo_text={"UNIZIK-PG-STUDIES"}
 					/>					
 				</div>
 					

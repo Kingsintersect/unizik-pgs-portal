@@ -1,7 +1,8 @@
 'use client';
 import React from 'react';
-import { Dropdown } from 'flowbite-react';
 import { exportToExcel } from '@/lib/utils/exportUtils';
+import DropDownMenu from './DropDownMenu';
+import { Roles } from '@/app/(dashboard)/dashboard/admin/users/users.types';
 
 interface ExportDropdownProps {
    data: any[];
@@ -9,33 +10,33 @@ interface ExportDropdownProps {
 }
 
 const ExportDropdown: React.FC<ExportDropdownProps> = ({ data, columns }) => {
-   const handleExport = (type: 'all' | 'complete_application' | 'acceptance' | 'tuition' ) => {
+   const handleExport = (type: 'all' | 'students' | 'teachers' | 'managers' ) => {
       switch (type) {
          case 'all':
             exportToExcel(
                data,
-               'all_students',
+               'all_users',
                columns,
             );
             break;
-         case 'complete_application':
+         case 'students':
             exportToExcel(
-               data.filter((student: any) => student.is_applied === 0),
-               'students_not_completed_application_form',
+               data.filter((users: any) => users.role === Roles.STUDENT),
+               'students',
                columns,
             );
             break;
-         case 'acceptance':
+         case 'teachers':
             exportToExcel(
-               data.filter((student: any) => student.accpetance_fee_payment_status === 0),
-               'students_not_paid_acceptance_fee',
+               data.filter((users: any) => users.role === Roles.TEACHER),
+               'teachers',
                columns,
             );
             break;
-         case 'tuition':
+         case 'managers':
             exportToExcel(
-               data.filter((student: any) => student.tuition_payment_status === 0),
-               'students_not_paid_tuition_fee',
+               data.filter((users: any) => users.role === Roles.MANAGER),
+               'managers',
                columns,
             );
             break;
@@ -44,29 +45,22 @@ const ExportDropdown: React.FC<ExportDropdownProps> = ({ data, columns }) => {
       }
    };
 
+   const menuItems = [
+      { title: 'Export All Users', condition: 'ACTIVE' as 'ACTIVE', checked: false, onClick: () => handleExport('all') },
+      { title: 'Export All Students', condition: 'ACTIVE' as 'ACTIVE', checked: false, onClick: () => handleExport('students') },
+      { title: 'Export All Teachers', condition: 'ACTIVE' as 'ACTIVE', checked: false, onClick: () => handleExport('teachers') },
+      { title: 'Export All Managers', condition: 'ACTIVE' as 'ACTIVE', checked: false, onClick: () => handleExport('managers') },
+   ]
+
    return (
-      <Dropdown label="Export Data" inline>
-         <Dropdown.Item
-            onClick={() => handleExport('all')}
-         >
-            Export All Students
-         </Dropdown.Item>
-         <Dropdown.Item
-            onClick={() => handleExport('complete_application')}
-         >
-            Export Students Not Completed Application Form
-         </Dropdown.Item>
-         <Dropdown.Item
-            onClick={() => handleExport('acceptance')}
-         >
-            Export Students Not Paid Acceptance Fee
-         </Dropdown.Item>
-         <Dropdown.Item
-            onClick={() => handleExport('tuition')}
-         >
-            Export Students Not Paid Tuition Fee
-         </Dropdown.Item>
-      </Dropdown>
+      <>
+         <DropDownMenu
+            menu={menuItems}
+            variant="RADIO"
+            title={'Exoprt User Data'}
+            menuLabel={''}
+         />
+      </>
    );
 };
 

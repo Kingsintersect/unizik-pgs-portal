@@ -9,20 +9,24 @@ import { getSession } from "@/lib/session"
 import { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { Suspense } from "react"
+import { Roles } from "./dashboard/admin/users/users.types"
+import { SessionData } from "@/types/auth"
+import { loginSessionKey } from "@/lib/definitions"
+import { verifySession } from "@/lib/server.utils"
 
 export const metadata: Metadata = {
-  title: "ESUT - Dashboard",
+  title: "UNIZIK-PG-STUDIES - Dashboard",
   description: "Dashboard Overview",
 };
 
 const layout = async ({ children }: { children: React.ReactNode }) => {
-   const session = await getSession("session");
-   if (!session) {
-      console.log('not logged in daashboard layout')
-      redirect("/auth/student");
-      return;
-   }
-   const MobileMenuItems: any[] = session?.role === "admin" ? ADMIN_SIDENAV_ITEMS : STUDENT_SIDENAV_ITEMS;
+   const session = await verifySession(loginSessionKey);
+   // if (!session) {
+   //    console.log('not logged in daashboard layout')
+   //    redirect("/auth/signin");
+   // }
+   const MobileMenuItems: any[] = session?.role === Roles.ADMIN ? ADMIN_SIDENAV_ITEMS : STUDENT_SIDENAV_ITEMS;
+   
 
    /**
     * REMOVE THE NEXT LINE AND UNCOMMENT THE ABOVE LINES OF CODE

@@ -1,7 +1,6 @@
-import { UserCircleIcon } from '@heroicons/react/24/outline';
+import { UserCircleIcon } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
-import "./cards.styles.module.css";
 
 interface ISocialType {
     url: string;

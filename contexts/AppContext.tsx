@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 type AppState = {
-   student: StudentType;
+   user: StudentType;
    isAuthenticated: boolean;
    isPageLoading: boolean;
    passportUrl: string | null;
@@ -15,9 +15,9 @@ type AppState = {
 
 type AppContextType = {
    state: AppState;
-   setStudent: (newStudentData: Partial<StudentType>) => void;
-   getStudent: () => string;
-   removeStudent: () => void;
+   setUser: (newStudentData: Partial<StudentType>) => void;
+   getUser: () => string;
+   removeUser: () => void;
    setAuthentication: (status: boolean) => void;
    setIsPageLoading: (status: boolean) => void;
    setExamSittingState: (status: boolean) => void;
@@ -36,7 +36,7 @@ type Props = {
 
 export const AppProvider: React.FC<Props> = ({ children }) => {
    const [state, setState] = useState<AppState>({
-      student: {
+      user: {
          id: null,
          pictureRef: null,
          last_name: null,
@@ -53,15 +53,10 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
          amount: null,
          reg_number: null,
          is_applied: 0,
-         reason_for_denial: null,
-         admission_status: "pending",
-         accpetance_fee_payment_status: 0,
-         tuition_payment_status: 0,
-         application_payment_status: 0,
          created_at: null,
          updated_at: null,
          deleted_at: null,
-         role: "student",
+         role: "STUDENT",
          level: null,
          tuition_amount_paid: 0,
       },
@@ -75,20 +70,20 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
       examSittingState: false,
    });
 
-   // Function to update student
-   const setStudent = (newStudentData: Partial<StudentType>) => {
-      localStorage.setItem("student", JSON.stringify(newStudentData));
+   // Function to update user
+   const setUser = (newStudentData: Partial<StudentType>) => {
+      localStorage.setItem("user", JSON.stringify(newStudentData));
       setState((prevState) => ({
          ...prevState,
-         student: { ...prevState.student, ...newStudentData },
+         user: { ...prevState.user, ...newStudentData },
       }));
    };
-   const getStudent = () => {
-      const student = localStorage.getItem("student") || "";
-      return JSON.parse(student);
+   const getUser = () => {
+      const user = localStorage.getItem("user") || "";
+      return JSON.parse(user);
    };
-   const removeStudent = () => {
-      localStorage.removeItem("student");
+   const removeUser = () => {
+      localStorage.removeItem("user");
    };
 
    // Function to update authentication status
@@ -133,9 +128,9 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
    return (
       <AppContext.Provider value={{
          state,
-         setStudent,
-         getStudent,
-         removeStudent,
+         setUser,
+         getUser,
+         removeUser,
          setAuthentication,
          setIsPageLoading,
          setExamSittingState,

@@ -1,11 +1,18 @@
 "use client";
-import cn from "@/lib/cn";
-import { Label, Select } from "flowbite-react";
+import {cn}from "@/lib/utils";
 import { ReactNode, useRef } from "react";
 import Image from 'next/image';
-import { FieldError, Path, useFormContext, UseFormRegister } from "react-hook-form";
-import { PhotoIcon } from "@heroicons/react/24/outline";
+import { Control, Controller, FieldError, Path, useFormContext, UseFormRegister } from "react-hook-form";
+import { ImageIcon, Camera } from "lucide-react";
+import { Label } from "@/components/ui/label"
 import Spinner from "../application/Spinner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 // const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB in bytes
 // const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png"];
@@ -174,57 +181,63 @@ export const CheckBoxFormField = <T extends Record<string, any>>({
 };
 
 // SELECT MENU FIELD DEFINITION
-export type SelectFormFieldProps<T extends FormDataType> = {
+export type SelectFormFieldProps<T extends Record<string, any>> = {
    id: string;
-   name: ValidFieldNamesType<T>;
-   register: UseFormRegister<T>;
-   error: FieldError | undefined;
+   name: Path<T>; // Ensure name is a valid path in the form schema
+   // register: UseFormRegister<T>;
+   control: Control<T>;// <-- Use control instead of register
+   error?: FieldError;
    label?: string;
-   data?: any;
-   children?: ReactNode;
+   data?: { value: string; label: string }[];
    classList?: string;
    valueAsNumber?: boolean;
    validationRules?: object,
    selected?: any,
    handleChange?: any;
    defaultValue?: any;
+   placeholder?: any;
 };
 export const SelectFormField = <T extends Record<string, any>>({
    name,
    id,
    label,
-   children,
-   register,
+   control,
    error,
-   data,
+   data = [],
    classList,
    valueAsNumber,
    validationRules,
    selected,
    handleChange,
    defaultValue,
+   placeholder,
 }: SelectFormFieldProps<T>) => (
-   <div className={cn(`w-full `, classList)}>
-      <div className="mb-2 block">
-         {/* <Label htmlFor={id} value={label || "Select An Option"} /> */}
-         {label && <Label htmlFor={id} value={label} />}
-      </div>
-      <Select
-         id={id}
-         // {...selected && selected}
-         {...register(name, { ...validationRules, valueAsNumber })}
-         value={selected}
-         defaultValue={defaultValue}
-         onChange={handleChange}
-      >
-         {data && data.map((item: any, i: any) => (
-            <option key={i} value={item.value}>{item.label}</option>
-         ))}
-         {children && children}
-      </Select>
-      {error && <span className="error-message text-xs text-red-400">{error.message}</span>}
-   </div>
-)
+  <div className={cn("w-full relative", classList)}>
+    {label && <label htmlFor={id} className="mb-2 block">{label}</label>}
+    
+      <Controller
+         name={name}
+         control={control}
+         render={({ field }) => (
+         <Select onValueChange={field.onChange} value={field.value ?? ""} defaultValue={field.value}>
+            <SelectTrigger id={id}>
+               <SelectValue placeholder={placeholder} />
+            </SelectTrigger>
+            <SelectContent>
+               {data.map((item) => (
+               <SelectItem key={item.value} value={item.value}>
+                  {item.label}
+               </SelectItem>
+               ))}
+            </SelectContent>
+         </Select>
+         )}
+      />
+
+    {error && <span className="text-xs text-red-400">{error.message}</span>}
+  </div>
+);
+
 
 // TEXTAREA FIRM FIELD
 export type TextareaFieldProps<T extends FormDataType> = {
@@ -325,7 +338,7 @@ export const FileInputFormField = <T extends Record<string, any>>({
                         className="mx-auto"
                      />
                   </>
-                  : <PhotoIcon color="#dccece" width={80} className='mx-auto' />
+                  : <Camera color="#dccece" width={80} className='mx-auto' />
                }
                <div className="mt-4 flex flex-col justify-center space-y-2 text-sm leading-6 text-gray-600">
                   {isLoading && <div className='my-4'><Spinner border='text-[#dccece]' fill='fill-blue-600' /></div>}

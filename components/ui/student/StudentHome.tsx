@@ -1,14 +1,14 @@
 "use client";
 import { useAppContext } from "@/contexts/AppContext";
-import { AdmissionStatus, StatusCheckCaard, } from "./Status";
 import StudentBanner from "./StudentBanner";
 import { SkeletonCard } from "../application/suspence/CardSkeleton";
+import PhotoCard from "../cards/PhotoCard";
 
 type statusType = 1 | 0;
 const StudentHome = () => {
    const { state } = useAppContext();
-   const student = state.student;
-
+   const student = state.user;
+   const lmsLink = "https://unizik-pg-lms.qverselearning.org/login/index.php";
 
    return (
       <>
@@ -22,12 +22,26 @@ const StudentHome = () => {
             <>
                <div className=" text-gray-600">
                   <StudentBanner student={student} />
-                  <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-5">
-                     <StatusCheckCaard admission={student.admission_status} url="/admission/application/payment" dataStatus={student.application_payment_status as statusType} title={"Application Fee"} />
-                     <AdmissionStatus admissionStatus={student.admission_status} />
-                     <StatusCheckCaard admission={student.admission_status} url="/dashboard/student/acceptance" dataStatus={student.accpetance_fee_payment_status as statusType} title={"Acceptance Fee"} />
-                     <StatusCheckCaard admission={student.admission_status} url="/dashboard/student/tuition" dataStatus={student.tuition_payment_status as statusType} title={"Tuition Fee"} />
-                  </div>
+               </div>
+               <div className="w-full grid grid-cols-3 gap-4 items-center justify-center my-10">
+                  <PhotoCard url={lmsLink} image_url={"/course/opreating-systems.png"} title={"Noteworthy technology acquisitions 2021"} code={"GST 101"} user={{
+                     image_url: "/users/user3.jpg",
+                     name: "Dr. John Doe",
+                     email: "lecturer@emailcontact.com",
+                     phone: "234 8123 456 789"
+                  }}/>
+                  <PhotoCard url={lmsLink} image_url={"/logo/logo.svg"} title={"Noteworthy technology acquisitions 2021"} code={"GST 101"} user={{
+                     image_url: "/users/user3.jpg",
+                     name: "Dr. John Doe",
+                     email: "lecturer@emailcontact.com",
+                     phone: "234 8123 456 789"
+                  }}/>
+                  <PhotoCard url={lmsLink} image_url={"/course/probability.png"} title={"Noteworthy technology acquisitions 2021"} code={"GST 101"} user={{
+                     image_url: "/users/user3.jpg",
+                     name: "Dr. John Doe",
+                     email: "lecturer@emailcontact.com",
+                     phone: "234 8123 456 789"
+                  }}/>
                </div>
             </>
          }
