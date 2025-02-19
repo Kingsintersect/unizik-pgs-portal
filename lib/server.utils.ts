@@ -2,6 +2,8 @@ import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { SessionData } from "@/types/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function verifySession(key: string) {
   if (typeof window === "undefined") {
     try {
