@@ -1,9 +1,9 @@
 import { verifySession } from '@/lib/server.utils';
 import CreateClassSubject from '../components/CreateClassSubject';
 import { BreadcrumbResponsive } from '@/components/Breadcrumb';
+import { loginSessionKey } from '@/lib/definitions';
 
-const Page = async ({ params }: { params: { id: string } }) => {
-   const id = params.id;
+const Page = async () => {
    const session = await verifySession(loginSessionKey);
 
    const breadcrumbItems = [
