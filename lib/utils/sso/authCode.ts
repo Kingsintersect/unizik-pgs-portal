@@ -36,7 +36,10 @@ export async function verifyAuthCode<T = Record<string, any>>(
     return false;
   }
 
-  const { authCode, expiresAt } = sessionData
+  const { authCode, expiresAt } = sessionData as {
+    authCode: string;
+    expiresAt: number;
+  };
 
   // Check if the auth code matches
   if (!authCode || authCode !== code) {
