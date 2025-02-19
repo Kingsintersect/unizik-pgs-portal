@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { LucideUsersRound } from 'lucide-react';
 import CustomCard from '@/components/CustomCard';
 import { loginSessionKey } from '@/lib/definitions';
+import Link from 'next/link';
 
 export const dynamic = "force-dynamic";
 const AdminDashboard = async () => {
@@ -14,16 +15,21 @@ const AdminDashboard = async () => {
       FetchAllStudents(session.token).catch(error => console.error("FetchAllStudents failed:", error)),
       FetchAllManagers(session.token).catch(error => console.error("FetchAllManagers failed:", error)),
    ]);
-   const usersCount = users.success.data.length
-   const teachersCount = teachers.success.data.length
-   const studentCount = students.success.data.length
-   const managersCount = managers.success.data.length
+   const usersCount = users.success.data.length ?? [];
+   const teachersCount = teachers.success.data.length ?? [];
+   const studentCount = students.success.data.length ?? [];
+   const managersCount = managers.success.data.length ?? [];
 
    return (
       <section className='w-full text-gray-800 space-y-16'>
          <div className="w-full bg-white rounded-lg shadow-lg p-10">
             <div className="flex flex-col md:flex-row justify-between gap-5">
-               <div className="text-3xl font-semibold text-orange-800">Administrator</div>
+               <div className="text-3xl font-semibold text-orange-800">
+                  <span className="">Administrator</span>                  
+                  <Link href={"https://unizik-pg-lms.qverselearning.org/ssotester/index.php?sso_loggers=1&password=1"} className="text-blue-950">
+                     Study on LMS
+                  </Link>                  
+               </div>
                <div className="relative h-[100px] w-[200px]">
                   <Image src={'/random/rand1.jpg'} alt={'banner'} fill style={{ objectFit: "cover" }} />
                </div>

@@ -28,7 +28,7 @@ export async function logout() {
 
 export const Signin = async (data: any) => {
   const response = (await apiCallerBeta({
-    url: `${remoteApiUrl}/account/login`,
+    url: `${remoteApiUrl}/account/login2`,
     method: "POST",
     data: { ...data },
   })) as any;
