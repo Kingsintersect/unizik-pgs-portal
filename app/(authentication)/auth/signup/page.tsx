@@ -4,17 +4,17 @@ import { Signup } from '@/app/actions/auth';
 import {cn}from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import useToken from '@/hook/useToken';
-import { useAppContext } from '@/contexts/AppContext';
 import { baseUrl } from '@/config';
 import { notify } from '@/contexts/ToastProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { InputFormField } from '@/components/ui/inputs/FormFields';
 import { AdminLoginFormData, AdminLoginSchema } from '../auth.types';
+import { useUser } from '@/contexts/UserContext';
 
 
 export default function AdminLoginPage() {
     const router = useRouter();
-    const { setUser } = useAppContext()
+    const { setUser } = useUser();
     const { saveToken } = useToken();
     const {
           register,

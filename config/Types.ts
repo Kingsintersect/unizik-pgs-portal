@@ -41,6 +41,7 @@ interface StudentType {
    last_name: string | null,
    first_name: string | null,
    other_name: string | null,
+   username: string | null,
    faculty_id: string | null,
    department_id: string | null,
    nationality: string | null,

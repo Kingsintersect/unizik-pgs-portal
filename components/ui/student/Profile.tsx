@@ -1,11 +1,10 @@
 "use client";
 import { GetStudentStudyAccount } from "@/app/actions/student"
-import { useAppContext } from "@/contexts/AppContext";
-import { Key, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { lmsLoginUrl } from "@/config";
 import Image from "next/image";
-import { ClipboardCheck, ClipboardList, CircleUserRound, BookOpenText, LayoutDashboard } from "lucide-react";
+import { ClipboardCheck, CircleUserRound, LayoutDashboard } from "lucide-react";
 import { notify } from "@/contexts/ToastProvider";
 
 import { GetAllCoursesInACategory } from "@/app/actions/server.admin";
@@ -17,6 +16,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTableCheckboxColumn, DataTableColumnHeader } from "../datatable/DataTableColumnHeader";
 import { ActionMenu } from "../datatable/ActionMenu";
 import { DataTable } from "../datatable/DataTable";
+import { useUser } from "@/contexts/UserContext";
 
 
 export type ProfileTableColum = {
@@ -52,20 +52,10 @@ export const profile_table: ColumnDef<ProfileTableColum>[] = [
     },
 ]
 
-type ProfileType = {
-   id: number;
-   first_name: string;
-   last_name: string;
-   email: string;
-   phone: string;
-   reg_number: string;
-   level: string;
-};
-
 const Profile = () => {
-   const { state } = useAppContext();
+   const { user} = useUser();
    const router = useRouter();
-   const student = state.user;
+   const student = user;
    const [profile, setProfile] = useState<Profile | null>(null);
    const [courses, setCourses] = useState<any | null>(null);
    const [isLoading, setIsLoading] = useState(false);
@@ -126,8 +116,8 @@ const Profile = () => {
    }
 
    const handleCopy = () => {
-      if (isClient && student.reg_number) {
-         navigator.clipboard.writeText(student.reg_number);
+      if (isClient && student?.reg_number) {
+         navigator.clipboard.writeText(student?.reg_number);
          setCopied(true);
          setTimeout(() => {
             setCopied(false)

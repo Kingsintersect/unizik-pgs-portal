@@ -1,14 +1,14 @@
 "use client";
-import { useAppContext } from "@/contexts/AppContext";
 import StudentBanner from "./StudentBanner";
 import { SkeletonCard } from "../application/suspence/CardSkeleton";
 import PhotoCard from "../cards/PhotoCard";
+import { useUser } from "@/contexts/UserContext";
 
-type statusType = 1 | 0;
 const StudentHome = () => {
-   const { state } = useAppContext();
-   const student = state.user;
-   const lmsLink = "https://unizik-pg-lms.qverselearning.org/login/index.php";
+   const { user } = useUser();
+   const student = user;
+   console.log(student);
+   const lmsLink = `https://unizik-pg-lms.qverselearning.org/ssotester/index.php?sso_loggers=1&u=${student?.username}&password=1`;
 
    return (
       <>

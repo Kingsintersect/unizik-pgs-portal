@@ -42,6 +42,7 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
          last_name: null,
          first_name: null,
          other_name: null,
+         username: null,
          faculty_id: null,
          department_id: null,
          nationality: null,

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { decrypt, getSession } from "@/lib/session";
-import { cookies } from "next/headers";
+import { getSession } from "@/lib/session";
 import { Roles } from "./app/(dashboard)/dashboard/admin/users/users.types";
-import { LoginSession, SessionData } from "./types/auth";
+import { SessionData } from "./types/auth";
 import { loginSessionKey } from "./lib/definitions";
 
 // 1. Specify protected and public routes
@@ -36,6 +35,7 @@ export default async function middleware(req: NextRequest) {
       typeof loginSession.role === "string"
         ? loginSession.role.toLowerCase()
         : "";
+
     return NextResponse.redirect(
       new URL(`/dashboard/${userRole}`, req.nextUrl)
     );

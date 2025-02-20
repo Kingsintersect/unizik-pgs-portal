@@ -6,6 +6,7 @@ import "./globals.css";
 import { AppProvider } from "@/contexts/AppContext";
 import { ToastProvider } from "@/contexts/ToastProvider";
 import { SessionProvider } from "next-auth/react";
+import { UserProvider } from "@/contexts/UserContext";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -26,10 +27,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className}  bg-[#fcece6]`}>
-        <AppProvider>
-          <ToastProvider />
-          <SessionProvider>{children}</SessionProvider>
-        </AppProvider>
+        <UserProvider>
+          <AppProvider>
+            <ToastProvider />
+            <SessionProvider>{children}</SessionProvider>
+          </AppProvider>
+        </UserProvider>
       </body>
     </html>
   );

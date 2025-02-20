@@ -11,10 +11,11 @@ import { InputFormField } from '@/components/ui/inputs/FormFields';
 import { AdminLoginFormData, AdminLoginSchema } from '../auth.types';
 import { cn } from '@/lib/utils';
 import { Roles } from '@/app/(dashboard)/dashboard/admin/users/users.types';
+import { useUser } from '@/contexts/UserContext';
 
-export default function AdminLoginPage() {
+export default function LoginPage() {
     const router = useRouter();
-    const { setUser } = useAppContext()
+    const { setUser } = useUser();
     const { saveToken } = useToken();
     const {
           register,

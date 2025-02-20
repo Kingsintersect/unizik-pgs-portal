@@ -21,7 +21,11 @@ interface PhotoCardProps {
 
 const PhotoCard: React.FC<PhotoCardProps> = ({ url, image_url, title, user, code, ...props }) => {
     return (
-        <Link href={url ?? "#"} className="block group max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:cursor-pointer">
+        <Link
+            href={url ?? "#"}
+            target='_blank'
+            className="block group max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:cursor-pointer"
+        >
             {/* <div className="group-hover:bg-red-400 "> */}
                 <div className={cn("relative w-full group-hover:px-20 h-[200px] scale-100 group-hover:bg-red-400 transition-all duration-700 ease-in-out 0s group-hover:scale-90")}>
                     <Image

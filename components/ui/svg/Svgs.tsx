@@ -40,9 +40,9 @@ export function PhoneSvg() {
         height="24"
         fill="none"
         stroke="#23628d"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         >
             <rect x="5" y="2" width="14" height="20" rx="2" ry="2" fill="white"/>
             <circle cx="12" cy="18" r="1" fill="white" stroke="#23628d"/>
