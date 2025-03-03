@@ -26,9 +26,9 @@ const AdminDashboard = async () => {
             <div className="flex flex-col md:flex-row justify-between gap-5">
                <div className="text-3xl font-semibold text-orange-800">
                   <span className="">Administrator</span>                  
-                  <Link href={"https://unizik-pg-lms.qverselearning.org/ssotester/index.php?sso_loggers=1&u=qverse_admin&password=1"} className="text-blue-950">
+                  {/* <Link href={"https://unizik-pg-lms.qverselearning.org/ssotester/index.php?sso_loggers=1&u=qverse_admin&password=1"} className="text-blue-950">
                      Study on LMS
-                  </Link>                  
+                  </Link>                   */}
                </div>
                <div className="relative h-[100px] w-[200px]">
                   <Image src={'/random/rand1.jpg'} alt={'banner'} fill style={{ objectFit: "cover" }} />

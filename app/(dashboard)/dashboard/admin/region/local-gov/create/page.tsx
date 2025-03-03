@@ -8,10 +8,9 @@ import { loginSessionKey } from '@/lib/definitions';
 
 export const dynamic = "force-dynamic";
 
-const page = async ({ params }: { params: { id: string } }) => {
-   const id = params.id;
+const page = async () => {
    const session = await verifySession(loginSessionKey);
-   const { error, success }: any = await new Promise((resolve) => resolve(GetListOfStates(session.token)));
+   const { error, success }: any = await new Promise((resolve) => resolve(GetListOfStates()));
 
    if (!success) {
       notFound();
@@ -33,10 +32,10 @@ const page = async ({ params }: { params: { id: string } }) => {
    return (
       <main className='space-y-10'>
          <div className="p-6">
-            <BreadcrumbResponsive items={breadcrumbItems} itemsToDisplay={3} />
+            {/* {breadcrumbItems && <BreadcrumbResponsive items={breadcrumbItems} itemsToDisplay={3} />} */}
          </div>
          <div className="w-full bg-white shadow-lg rounded-md px-7 py-20">
-            <CreateLocalGov state={success.data} token={session.token} />
+            <CreateLocalGov states={success.data} token={session.token} />
          </div>
       </main>
    )

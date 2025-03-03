@@ -7,9 +7,10 @@ import { Roles } from '@/app/(dashboard)/dashboard/admin/users/users.types';
 interface ExportDropdownProps {
    data: any[];
    columns?: string[]; // Accepts custom column fields
+   label?: string;
 }
 
-const ExportDropdown: React.FC<ExportDropdownProps> = ({ data, columns }) => {
+const ExportDropdown: React.FC<ExportDropdownProps> = ({ data, columns, label="Export Data" }) => {
    const handleExport = (type: 'all' | 'students' | 'teachers' | 'managers' ) => {
       switch (type) {
          case 'all':
@@ -57,7 +58,7 @@ const ExportDropdown: React.FC<ExportDropdownProps> = ({ data, columns }) => {
          <DropDownMenu
             menu={menuItems}
             variant="RADIO"
-            title={'Exoprt User Data'}
+            title={label}
             menuLabel={''}
          />
       </>

@@ -1,3 +1,4 @@
+"use client";
 import Search from '@/components/ui/inputs/Search'
 import { baseUrl } from '@/config'
 import { PlusIcon } from 'lucide-react'
@@ -5,75 +6,124 @@ import { Button } from "@/components/ui/button"
 import SelectMenu from '@/components/SelectMenu';
 import CustomCard from '@/components/CustomCard';
 import Link from 'next/link'
-import React, { Suspense } from 'react'
+import React, { Suspense, useEffect, useMemo, useState } from 'react'
 import { contry_columns } from './contry_table.columns'
 import { DataTable } from '@/components/ui/datatable/DataTable'
 import { GetListOfCountries } from '@/app/actions/server.admin'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { filterData } from '@/lib/utils';
+import { Card } from '@/components/ui/card';
+import ExportDropdown from '@/components/ExportDropdown';
+export const dynamic = 'force-dynamic';
 
-
-const page = async () => {
+const CountryPage = () => {
+   const [countries, setCountries] = useState<any[]>([]);
+   const [filter, setFilter] = useState("ALL");
+   const [searchQuery, setSearchQuery] = useState("");
+   const [loading, setLoading] = useState(true);
+   const [error, setError] = useState<string | null>(null);
    const basePath = `${baseUrl}/dashboard/admin/region/countries`;
-   let descendingData: any[];
-   
-   const { error, success }: any = await new Promise((resolve) => resolve(GetListOfCountries()));
+ 
+   const fetchCountries = async () => {
+      setLoading(true);
+      setError(null); // Reset error state
 
-   if (success) {
-      const ascendingData = [...success.data].sort((a, b) => a.id - b.id);
-      descendingData = [...success.data].sort((a, b) => b.id - a.id);
-   } else {
-      descendingData = [];
-   }
+      try {
+         const { success, error } = await GetListOfCountries();
+         if (success) {
+            const sortedData = success.data.sort((a: any, b: any) => b.id - a.id);
+            setCountries(sortedData);
+         } else if (error) {
+            setError(error.message || "Failed to fetch countries");
+         }
+      } catch (err) {
+         setError("An unexpected error occurred.");
+      } finally {
+         setLoading(false);
+      }
+   };
+
+   useEffect(() => {
+      let isMounted = true;
+         fetchCountries().catch(console.error);
+         return () => { isMounted = false; }; // Cleanup on unmount
+   }, []);
+
+   const filteredData = useMemo(() =>
+      filterData(countries, "status", filter, ["faculty_name"], searchQuery),
+      [filter, searchQuery, countries]
+   );
 
    return (
       <>
-         <div className="grid sm:grid-cols-2 gap-3 md:gap-10">
-            <div className="search">
-               <Search name={'search'} placeholder='Search for a department' />
-            </div>
-            <div className="search flex justify-end">
-               <SelectMenu
-                  placeholder='Theme'
-                  menu={[
-                     { title: 'namae', value: "namae" },
-                  ]}
-               />
-            </div>
-         </div>
-         <CustomCard
-            className='mt-7'
-            title="Countries"
-            description="List Of Countries"
-            titleClassName='text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-7'
-            contentClassName='font-normal text-gray-700 dark:text-gray-400 space-y-10 mb-7'
-         >
-            <div className="flex items-center justify-between">
-               <div className="flex gap-2 items-center">
-                  <span>Show</span>
-                  <SelectMenu
-                     placeholder='Numbers of entries'
-                     menu={[
-                        { title: '10', value: "10" },
-                        { title: '20', value: "20" },
-                        { title: '30', value: "30" },
-                     ]}
+         <Card className="mt-7 p-10">
+            <header className="w-full flex items-center justify-between text-orange-500 font-bold">
+               <h5 className="text-2xl font-bold tracking-tight text-[#23628d] dark:text-white mb-7">
+                  Country List
+               </h5>
+               {countries && countries.length > 0 && (
+                  <ExportDropdown
+                     label='Export Country Data'
+                     data={countries}
+                     columns={
+                        [
+                           'name',
+                           'description',
+                        ]
+                     }
                   />
-                  <span>entries</span>
+               )}
+            </header>
+            <div className="font-normal text-gray-700 dark:text-gray-400 space-y-10 mb-7">
+               <div className="grid sm:grid-cols-2 gap-3 md:gap-10">
+                  <div className="search">
+                     <Search
+                        name={'search'}
+                        placeholder='Search by name...'
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="p-3 rounded w-full"
+                     />
+                  </div>
+                  <div className="search flex justify-end gap-5">
+                     <Select
+                        onValueChange={(value: string) => setFilter(value)} 
+                        defaultValue={filter}
+                     >
+                        <SelectTrigger className='w-[280px]'>
+                           <SelectValue placeholder="SelectFilter Key" />
+                        </SelectTrigger>
+                        <SelectContent>
+                           <SelectItem value="ALL">All Countries</SelectItem>
+                           <SelectItem value="1">Active</SelectItem>
+                           <SelectItem value="0">InActive</SelectItem>
+                        </SelectContent>
+                     </Select>
+                  </div>
                </div>
-               <div className="">
-                  <Link href={`${basePath}/create`} >
-                     <Button>
-                        <PlusIcon className="h-5 md:ml-4" />
-                        Create New Course Category
-                     </Button>
-                  </Link>
+               <div className="flex flex-col">
+                  <div className="">
+                     <Link href={`${basePath}/create`} >
+                        <Button variant={'secondary'}>
+                           <PlusIcon className="h-5 md:ml-4" />
+                           Create New Country
+                        </Button>
+                     </Link>
+                  </div>
+               </div>
+               <div className="grid grid-cols-1">
+                  <DataTable columns={contry_columns} data={filteredData} />
                </div>
             </div>
-            <div className="">
-               <DataTable columns={contry_columns} data={descendingData} />
-            </div>
-         </CustomCard>
+         </Card>
       </>
    )
 }
 
-export default page
+export default CountryPage

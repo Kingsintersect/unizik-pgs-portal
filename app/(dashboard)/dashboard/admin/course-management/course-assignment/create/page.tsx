@@ -9,9 +9,8 @@ import { loginSessionKey } from '@/lib/definitions';
 
 export const dynamic = "force-dynamic";
 
-const page = async ({ params }: { params: { id: string } }) => {
+const page = async () => {
    const basePath = `${baseUrl}/dashboard/admin/course-management/course-assignment`;
-   const id = params.id;
    const session = await verifySession(loginSessionKey);
 
    const [courses, courseCategory]: any = await Promise.all([
@@ -38,7 +37,7 @@ const page = async ({ params }: { params: { id: string } }) => {
    return (
       <main className='space-y-10'>
          <div className="p-6">
-            <BreadcrumbResponsive items={breadcrumbItems} itemsToDisplay={3} />
+            {/* {breadcrumbItems && <BreadcrumbResponsive items={breadcrumbItems} itemsToDisplay={3} />} */}
          </div>
          <div className="w-full bg-white shadow-lg rounded-md px-7 py-20">
             <CreateCourseAssignment basePath={basePath} courses={courses.success.data} courseCategory={courseCategory.success.data} token={session.token} />

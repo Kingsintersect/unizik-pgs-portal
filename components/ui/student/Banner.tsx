@@ -8,7 +8,7 @@ const Banner = () => {
             <AppLogo
                image_url={'/logo/logo.svg'}
                logo_text_style='text-orange-800 font-bold text-2xl'
-               logo_text={'UNIZIK-PG-STUDIES-STUDENT-PORTAL'}
+               logo_text={'UNIZIK-PG-COLLEGE-PORTAL'}
                Img_container_style='w-32 h-32'
             />
          </div>

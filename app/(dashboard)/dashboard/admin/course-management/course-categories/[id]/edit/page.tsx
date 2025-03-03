@@ -8,16 +8,17 @@ import { loginSessionKey } from '@/lib/definitions';
 
 export const dynamic = "force-dynamic";
 
-const page = async ({ params, searchParams }: { params: { id: string }, searchParams: { [key: string]: string | string[] } }) => {
-   const { facultyId, departmentId } = searchParams;
+const page = async ({ params }: { params: { id: string } }) => {
    const id = params.id;
    const session = await verifySession(loginSessionKey);
 
-   const [courseCategory, faculty, department]: any = await Promise.all([
+   const [courseCategory, faculty, departments]: any = await Promise.all([
       GetSingleCourseCategory(id, session.token),
       GetListOfFaculties(),
       GetListOfDepartments(),
    ]);
+   const facultyId = courseCategory.success.data.faculty_id; 
+   const filteredDepartments = departments.success.data.filter((dept: any) => dept.faculty_id === facultyId);
 
    const studyLevels = StudyLevels;
    const semesters = Semesters;
@@ -38,13 +39,14 @@ const page = async ({ params, searchParams }: { params: { id: string }, searchPa
    return (
       <main className='space-y-10'>
          <div className="p-6">
-            <BreadcrumbResponsive items={breadcrumbItems} itemsToDisplay={3} />
+            {/* {breadcrumbItems && <BreadcrumbResponsive items={breadcrumbItems} itemsToDisplay={3} />} */}
          </div>
          <div className="w-full bg-white shadow-lg rounded-md px-7 py-20">
             <UpdateCourseCategory
                courseCategory={courseCategory.success.data}
-               faculty={faculty.success.data}
-               department={department.success.data}
+               faculties={faculty.success.data}
+               departments={filteredDepartments}
+               // departments={department.success.data}
                studyLevels={studyLevels}
                semesters={semesters}
                token={session.token}

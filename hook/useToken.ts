@@ -7,9 +7,11 @@ function useToken() {
 
    // Retrieve token from localStorage on initial render
    useEffect(() => {
-      const storedToken = localStorage.getItem('accessToken');
-      if (storedToken) {
-         setToken(storedToken);
+      if (typeof window !== "undefined") {
+         const storedToken = localStorage.getItem("accessToken");
+         if (storedToken) {
+            setToken(storedToken);
+         }
       }
    }, []);
 

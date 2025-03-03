@@ -1,4 +1,5 @@
 "use client";
+
 import { CreateNewCourse } from '@/app/actions/server.admin';
 import { baseUrl } from '@/config';
 import { notify } from '@/contexts/ToastProvider';
@@ -7,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, Loader2 } from "lucide-react";
 import { InputFormField, TextareaFormField } from '@/components/ui/inputs/FormFields';
 import { Button } from '@/components/ui/button';
 
@@ -25,7 +26,6 @@ const CreateCourse = ({ token }: { token: string }) => {
 
    const onSubmit: SubmitHandler<CourseFormData> = async (data) => {
       setIsLoading(true);
-      console.log(data);
       
       const { error, success }: any = await CreateNewCourse(token, data);
       if (error) {
@@ -47,7 +47,7 @@ const CreateCourse = ({ token }: { token: string }) => {
       <form onSubmit={handleSubmit(onSubmit)}>
          <div className="grid col-auto text-gray-700 space-y-10 mx-auto p-10 md:p-16 bg-gray-200 w-full sm:w-3/4 md:w-1/2 lg:w-2/3">
             <h1 className="text-3xl font-bold mb-4">
-               Create <span className="text-orange-700 font-extralight inline-block ml-10">{"New Course"}</span>
+               Create <span className="text-orange-700 font-extralight inline-block">{"New Course"}</span>
             </h1>
             <InputFormField<CourseFormData>
                type="text"
@@ -73,24 +73,14 @@ const CreateCourse = ({ token }: { token: string }) => {
                register={register}
                error={errors.description}
             />
-            {/* <Controller
-               name="photo"
-               control={control}
-               render={({ field }) => (
-                  <FileInput<CourseFormData>
-                     label="Upload Course Photo"
-                     id="photo"
-                     name="photo"
-                     setValue={(name, value) => setValue(name, value)}
-                     error={errors.photo?.message}
-                  />
-               )}
-            /> */}
-
             <div className="flex justify-center w-full">
                <Button type='submit'>
                   Save New Course
-                  <ArrowRightIcon className="ml-2 h-5 w-5" />
+                  {
+                     (isLoading)
+                     ? (<Loader2 className="animate-spin" />)
+                     : (<ArrowRightIcon className="ml-2 h-5 w-5" />)                     
+                  }
                </Button>
             </div>
          </div>
@@ -120,59 +110,4 @@ type CourseFormData = {
    course_code: string;
    description?: string | null;
    photo?: File | null;
-};
-
-interface FileInputProps<T> {
-   label: string;
-   id: string;
-   name: keyof T;
-   setValue: (name: keyof T, value: File | null) => void;
-   error?: string;
-}
-
-const FileInput = <T,>({
-   label,
-   id,
-   name,
-   setValue,
-   error,
-}: FileInputProps<T>) => {
-   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0] || null;
-      setValue(name, file);
-   };
-
-   return (
-      <div className="file-input-container">
-         <label htmlFor={id} className="file-input-label">
-            {label}
-         </label>
-         <input
-            type="file"
-            id={id}
-            name={String(name)}
-            accept="image/jpeg, image/png, image/gif"
-            onChange={handleFileChange}
-            className="file-input"
-         />
-         {error && <p className="error-message">{error}</p>}
-         <style jsx>{`
-         .file-input-container {
-           margin-bottom: 1rem;
-         }
-         .file-input-label {
-           font-weight: bold;
-           margin-bottom: 0.5rem;
-           display: block;
-         }
-         .file-input {
-           display: block;
-         }
-         .error-message {
-           color: red;
-           font-size: 0.875rem;
-         }
-       `}</style>
-      </div>
-   );
 };

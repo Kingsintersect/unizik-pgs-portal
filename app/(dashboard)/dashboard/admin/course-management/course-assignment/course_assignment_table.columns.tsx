@@ -3,33 +3,38 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableCheckboxColumn, DataTableColumnHeader } from "@/components/ui/datatable/DataTableColumnHeader";
 import { ActionMenu } from "@/components/ui/datatable/ActionMenu";
-import { UpdateSingleCourseAssignment } from "@/app/actions/server.admin";
+import { DeleteSingleCourseAssignment, UpdateSingleCourseAssignment } from "@/app/actions/server.admin";
 import { StatusCell } from "@/components/StatusToggle";
+import { baseUrl } from "@/config";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type CourseAssignmentTableColum = {
+export type CourseAssignmentTableColumType = {
     id: string
-    name: string
-    status: 1 | 0
+    short_code: string
+    actions: string
 }
+const basePath = `${baseUrl}/dashboard/admin/course-management/course-assignment`;
 
-export const course_assignment: ColumnDef<CourseAssignmentTableColum>[] = [
-    DataTableCheckboxColumn<CourseAssignmentTableColum>(),
+export const course_assignment_columns: ColumnDef<Partial<CourseAssignmentTableColumType>>[] = [
+    DataTableCheckboxColumn<Partial<CourseAssignmentTableColumType>>(),
     {
-        accessorKey: "name",
+        accessorKey: "short_code",
         header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Name" />
+        <DataTableColumnHeader column={column} title="COURSE CODE" />
         ),
     },
     {
-        accessorKey: "status",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
-        cell: (props) => <StatusCell {...props} method={UpdateSingleCourseAssignment} />,
-    },
-    {
         id: "actions",
-        cell: ({ row }) => <ActionMenu row={row.original} onCopy={(id) => navigator.clipboard.writeText(id)} />,
+        header: "Actions",
+        cell: ({ row }) => <ActionMenu
+            row={row.original  as CourseAssignmentTableColumType}
+            onCopy={(id) => navigator.clipboard.writeText(id)}
+            // onDelete={DeleteSingleCourseAssignment}
+            menu={[
+                {title: "Edit Data", url:`${basePath}/${row.original.id}/details`},
+            ]}
+        />,
     },
 ]
 

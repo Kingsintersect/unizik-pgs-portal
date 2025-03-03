@@ -1,9 +1,9 @@
 "use client";
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react';
-import { FieldError, SubmitHandler, useForm, UseFormRegister } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { z, ZodType } from 'zod';
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, Loader2 } from "lucide-react";
 import { UpdateSingleDepartment } from '@/app/actions/server.admin';
 import { notify } from '@/contexts/ToastProvider';
 import { baseUrl } from '@/config';
@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import { InputFormField, SelectFormField } from '@/components/ui/inputs/FormFields';
 import { Button } from '@/components/ui/button';
 
-const UpdateDeparment = ({ faculty, department, token }: { faculty: Faculty[], department: Department, token: string }) => {
+const UpdateDeparment = ({ faculties, department, token }: { faculties: Faculty[], department: Department, token: string }) => {
    const {
       register,
       handleSubmit,
@@ -19,13 +19,22 @@ const UpdateDeparment = ({ faculty, department, token }: { faculty: Faculty[], d
       formState: { errors },
       setError,
       control,
-   } = useForm<UpdateDeparmentFormData>({ resolver: zodResolver(UpdateDeparmentSchema), });
+   } = useForm<UpdateDeparmentFormData>({
+      resolver: zodResolver(UpdateDeparmentSchema),
+      defaultValues: {
+         faculty_id: String(department?.faculty_id || ""),
+         department_name: department?.department_name || ""
+      }
+   });
    const [isLoading, setIsLoading] = useState<boolean>(false);
    const router = useRouter();
 
    useEffect(() => {
       if (department) {
-         reset(department);  // Reset form with parent data
+         reset({
+            faculty_id: String(department.faculty_id),
+            department_name: department.department_name,
+         });
       }
    }, [department, reset]);
 
@@ -50,14 +59,14 @@ const UpdateDeparment = ({ faculty, department, token }: { faculty: Faculty[], d
       <form onSubmit={handleSubmit(onSubmit)}>
          <div className="grid col-auto text-gray-700 space-y-10 mx-auto p-10 md:p-16 bg-gray-200 w-full sm:w-3/4 md:w-1/2 lg:w-2/3">
             <h1 className="text-3xl font-bold mb-4">
-               Edit <span className="text-orange-700 font-extralight inline-block ml-4">{department.department_name}</span>
+               <span className="text-orange-700 font-extralight inline-block">{department.department_name}</span>
             </h1>
             <SelectFormField<UpdateDeparmentFormData>
-               id={'parent'}
                name="faculty_id"
-               placeholder={"Select the Faculty"}
                control={control}
-               valueAsNumber
+               label="Select Faculty"
+               options={faculties.map(faculty => ({ value: String(faculty.id), label: faculty.faculty_name }))}
+               placeholder="Choose a faculty"
                error={errors.faculty_id}
             />
             <InputFormField<UpdateDeparmentFormData>
@@ -68,18 +77,14 @@ const UpdateDeparment = ({ faculty, department, token }: { faculty: Faculty[], d
                register={register}
                error={errors.department_name}
             />
-            {/* <TextareaFormField<UpdateDeparmentFormData>
-               id="description"
-               rows={3}
-               placeholder="Short note about the new Department"
-               name="description"
-               register={register}
-               error={errors.description} cols={0} /> */}
-
             <div className="flex justify-center w-full">
                <Button type='submit'>
                   Edit Department
-                  <ArrowRightIcon className="ml-2 h-5 w-5" />
+                  {
+                     (isLoading)
+                     ? (<Loader2 className="animate-spin" />)
+                     : (<ArrowRightIcon className="ml-2 h-5 w-5" />)                     
+                  }
                </Button>
             </div>
          </div>
@@ -90,15 +95,13 @@ const UpdateDeparment = ({ faculty, department, token }: { faculty: Faculty[], d
 export default UpdateDeparment
 
 type UpdateDeparmentFormData = {
-   faculty_id: number,
+   faculty_id: string,
    department_name: string,
-   // description?: string,
 };
 export const UpdateDeparmentSchema: ZodType<UpdateDeparmentFormData> = z
-   .object({
-      faculty_id: z.number({ required_error: "Select Faculty", }),
-      department_name: z
-         .string({ message: "Deprtment name is required" })
-         .min(3, "Department name should be at least 3 characters"),
-      // despription: z.string().optional(),
-   })
+.object({
+   faculty_id: z.string().min(1, "Faculty is required"),
+   department_name: z
+      .string({ message: "Deprtment name is required" })
+      .min(3, "Department name should be at least 3 characters"),
+})

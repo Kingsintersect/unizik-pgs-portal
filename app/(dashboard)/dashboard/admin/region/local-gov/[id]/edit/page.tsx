@@ -9,13 +9,12 @@ export const dynamic = "force-dynamic";
 
 const page = async ({ params, searchParams }: { params: { id: string }, searchParams: { [key: string]: string } }) => {
    const id = params.id;
-   const { parent } = searchParams;
+   const { parentId } = searchParams;
    const session = await verifySession(loginSessionKey);
    const [state, localGov]: any = await Promise.all([
-      GetListOfStates(session.token),
-      GetSingleLocalGov(id, parent, session.token),
+      GetListOfStates(),
+      GetSingleLocalGov(id, parentId, session.token),
    ]);
-
    const breadcrumbItems = [
       { label: 'dashboard', href: '/dashboard/admin' },
       {
@@ -32,10 +31,15 @@ const page = async ({ params, searchParams }: { params: { id: string }, searchPa
    return (
       <main className='space-y-10'>
          <div className="p-6">
-            <BreadcrumbResponsive items={breadcrumbItems} itemsToDisplay={3} />
+            {/* {breadcrumbItems && <BreadcrumbResponsive items={breadcrumbItems} itemsToDisplay={3} />} */}
          </div>
          <div className="w-full bg-white shadow-lg rounded-md px-7 py-20">
-            <UpdateLocalGov parent={parent} state={state.success.data} token={session.token} localGov={localGov.success.data} />
+            <UpdateLocalGov
+               // parentId={parentId}
+               states={state.success.data}
+               token={session.token}
+               localGov={localGov.success.data}
+            />
          </div>
       </main>
    )

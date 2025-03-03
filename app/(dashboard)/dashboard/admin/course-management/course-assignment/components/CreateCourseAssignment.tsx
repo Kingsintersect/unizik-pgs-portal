@@ -1,14 +1,22 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { z, ZodType } from 'zod';
 import { notify } from '@/contexts/ToastProvider';
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, Loader2 } from "lucide-react";
 import { CreateNewCourseAssignment, GetCoursesAssignedToACategory } from '@/app/actions/server.admin';
 import { Button } from '@/components/ui/button';
-import { InputFormField, SelectFormField } from '@/components/ui/inputs/FormFields';
+import { SelectFormField } from '@/components/ui/inputs/FormFields';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 interface Row {
    course: string;
@@ -42,11 +50,8 @@ const CreateCourseAssignment = ({
    courseCategory,
 }: CreateCourseAssignmentProps) => {
    const {
-      register,
       handleSubmit,
-      reset,
       formState: { errors },
-      setError,
       control,
    } = useForm<CourseAssignmentFormData>({ resolver: zodResolver(CreateCourseAssignmentSchema), });
    const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -62,12 +67,11 @@ const CreateCourseAssignment = ({
 
 
    // COURSE ASSIGNMENT
-   const handleCategoryCourseChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const catId = e.target.value;
-      if (!catId) return;
+   const handleCategoryCourseChange = async (courseCategoryId: string) => {
+      if (!courseCategoryId) return;
 
       try {
-         const { error, success }: any = await GetCoursesAssignedToACategory(catId, token);
+         const { error, success }: any = await GetCoursesAssignedToACategory(courseCategoryId, token);
          if (error) {
             console.error("Error fetching courses:", error);
             return;
@@ -203,15 +207,14 @@ const CreateCourseAssignment = ({
       return status
    }
 
-   const filterAvailableCourses = () => {
+   const filterAvailableCourses = useCallback(() => {
       let availableCourseCodes = rows.map(row => row.course);
       setAvailableCourses(courses.filter(course => !availableCourseCodes.includes(course.course_code)));
-   };
-
+   }, [rows, courses]); 
 
    useEffect(() => {
       filterAvailableCourses();
-   }, [rows]);
+   }, [filterAvailableCourses]);
 
    const onSubmit: SubmitHandler<CourseAssignmentFormData> = async (data) => {
       if (rows.length === 0) {
@@ -246,36 +249,37 @@ const CreateCourseAssignment = ({
       <div>
          <form onSubmit={handleSubmit(onSubmit)} className='block space-y-10'>
             <SelectFormField<CourseAssignmentFormData>
-               id={'course_category_id'}
                name="course_category_id"
                placeholder={"Select the Course category"}
                control={control}
-               // valueAsNumber
+               options={courseCategory.map((cat: any) => ({ value: String(cat.id), label: cat.short_code }))}
                error={errors.course_category_id}
-               handleChange={handleCategoryCourseChange}
+               onValueSelect={handleCategoryCourseChange}
             />
 
-            <div className="overflow-x-auto">
-               {/* <Table>
-                  <Table.Head>
-                     <Table.HeadCell>Courses</Table.HeadCell>
-                     <Table.HeadCell>Credit Load</Table.HeadCell>
-                     <Table.HeadCell>Actions</Table.HeadCell>
-                  </Table.Head>
-                  <Table.Body className="divide-y">
+            <div className="w-full overflow-x-auto">
+               <Table>
+                  <TableHeader>
+                     <TableRow>
+                        <TableHead>COURSE CODE</TableHead>
+                        <TableHead>CREDIT UNIT</TableHead>
+                        <TableHead>ACTIONS</TableHead>
+                     </TableRow>
+                  </TableHeader>
+                  <TableBody>
                      {Array.isArray(rows) && rows.map((row, index) => (
-                        <Table.Row key={index}>
-                           <Table.Cell className='font-semibold'>{row.course}</Table.Cell>
-                           <Table.Cell className='font-semibold'>{row.credit_load}</Table.Cell>
-                           <Table.Cell className='flex flex-1 gap-5 text-lg'>
-                              <button type="button" onClick={() => handleEditRow(index)} className='text-cyan-600 font-semibold'>Edit</button>
+                        <TableRow key={index}>
+                           <TableCell>{row.course}</TableCell>
+                           <TableCell>{row.credit_load}</TableCell>
+                           <TableCell className='flex flex-1 gap-5 text-lg'>
+                              <Button type="button" onClick={() => handleEditRow(index)} className='font-semibold' variant={'primary'}>Edit</Button>
                               <span className="font-bold">|</span>
-                              <button type="button" onClick={() => handleDeleteRow(index)} className='text-red-700 font-semibold '>Delete</button>
-                           </Table.Cell>
-                        </Table.Row>
+                              <Button type="button" onClick={() => handleDeleteRow(index)} className='font-semibold ' variant={'destructive'}>Delete</Button>
+                           </TableCell>
+                        </TableRow>
                      ))}
-                     <Table.Row>
-                        <Table.Cell>
+                     <TableRow>
+                        <TableCell>
                            <select value={selectedCourse} onChange={handleCourseChange}>
                               <option value="">Select Course</option>
                               {availableCourses && availableCourses.map((course) => (
@@ -283,8 +287,8 @@ const CreateCourseAssignment = ({
                               ))}
                            </select>
                            {assignmentErrors.course && <div className="text-red-500">{assignmentErrors.course}</div>}
-                        </Table.Cell>
-                        <Table.Cell>
+                        </TableCell>
+                        <TableCell>
                            <input
                               type="text"
                               value={credit_load}
@@ -292,22 +296,26 @@ const CreateCourseAssignment = ({
                               placeholder="Enter Credit Load"
                            />
                            {assignmentErrors.credit_load && <div className="text-red-500">{assignmentErrors.credit_load}</div>}
-                        </Table.Cell>
-                        <Table.Cell>
+                        </TableCell>
+                        <TableCell className='flex flex-1 gap-5 text-lg'>
                            {editingRowIndex !== null ? (
                               <button type="button" onClick={handleSaveRow} className='rounded-lg border-2 border-orange-400 px-5 py-1 bg-orange-50 font-semibold'>Save</button>
                            ) : (
                               <button type="button" onClick={handleAddRow} className='rounded-lg border-2 border-green-400 px-5 py-1 bg-green-50 font-semibold'>Add</button>
                            )}
-                        </Table.Cell>
-                     </Table.Row>
-                  </Table.Body>
-               </Table> */}
+                        </TableCell>
+                     </TableRow>
+                  </TableBody>
+               </Table>
             </div>
             <div className="flex justify-center w-full">
                <Button type='submit'>
                   Save New Course Assignment
-                  <ArrowRightIcon className="ml-2 h-5 w-5" />
+                  {
+                     (isLoading)
+                     ? (<Loader2 className="animate-spin" />)
+                     : (<ArrowRightIcon className="ml-2 h-5 w-5" />)                     
+                  }
                </Button>
             </div>
          </form>
@@ -319,13 +327,12 @@ export default CreateCourseAssignment;
 
 
 type CourseAssignmentFormData = {
-   course_category_id: number,
+   course_category_id: string,
    assignments?: Array<{ course_code: string, course_id: number, credit_load: number }>
 };
 export const CreateCourseAssignmentSchema: ZodType<CourseAssignmentFormData> = z
    .object({
-      course_category_id: z
-         .number({ required_error: "Select Course Category" }),
+      course_category_id: z.string().min(1, "Faculty is required"),
       assignments: z
          .array(
             z.object({

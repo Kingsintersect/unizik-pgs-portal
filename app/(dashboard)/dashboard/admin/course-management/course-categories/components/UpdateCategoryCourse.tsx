@@ -1,5 +1,5 @@
 "use client";
-import { UpdateSingleCourseCategory } from '@/app/actions/server.admin';
+import { GetAllDepartmentInAFaculty, UpdateSingleCourseCategory } from '@/app/actions/server.admin';
 import { baseUrl } from '@/config';
 import { notify } from '@/contexts/ToastProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -7,30 +7,65 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { z, ZodType } from 'zod';
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, Loader2 } from "lucide-react";
 import { SelectFormField } from '@/components/ui/inputs/FormFields';
 import { Button } from '@/components/ui/button';
 
-const UpdateCourseCategory = ({ token, courseCategory, faculty, department, studyLevels, semesters }: { token: string, courseCategory: CourseCategory, faculty: Faculty[], department: Department[], studyLevels: StudyLevelsType[], semesters: SemestersType[] }) => {
+const UpdateCourseCategory = ({ token, courseCategory, faculties, departments, studyLevels, semesters }: { token: string, courseCategory: CourseCategory, faculties: Faculty[], departments: Department[], studyLevels: StudyLevelsType[], semesters: SemestersType[] }) => {
    const {
-      register,
       handleSubmit,
       reset,
       formState: { errors },
       setError,
       control,
-   } = useForm<CourseCategoryFormData>({ resolver: zodResolver(UpdateCourseCategorySchema), });
+   } = useForm<CourseCategoryFormData>({
+      resolver: zodResolver(UpdateCourseCategorySchema),
+      defaultValues: {
+         faculty_id: String(courseCategory?.faculty_id ?? ""),  
+         department_id: String(courseCategory?.department_id ?? ""),
+         level: String(courseCategory?.level ?? ""),
+         semester: String(courseCategory?.semester ?? ""),
+      }
+    });
    const [isLoading, setIsLoading] = useState<boolean>(false);
+   const [selectedDepartments, setSelectedDepartments] = useState<any[]>([]);
    const router = useRouter();
 
    useEffect(() => {
       if (courseCategory) {
-         reset(courseCategory);  // Reset form with parent data
+         reset({
+            faculty_id: String(courseCategory?.faculty_id ?? ""),
+            department_id: String(courseCategory?.department_id ?? ""),
+            level: String(courseCategory?.level ?? ""),
+            semester: String(courseCategory?.semester ?? ""),
+         });
       }
-   }, [courseCategory, reset]);
+      if (departments) {
+         setSelectedDepartments(departments);
+      }
+   }, [courseCategory, departments, reset]);
+
+   const handleFacultyChange = async (facultyId: string) => {
+      if (!facultyId) return;
+      try {
+         const { error, success }: any = await GetAllDepartmentInAFaculty(facultyId);
+         if (error) {
+            console.error("Error fetching courses:", error);
+            return;
+         }
+
+         if (success.data) {
+            setSelectedDepartments(success.data.map((dept: any) => ({ 
+               ...dept, 
+               id: String(dept.id) 
+            })));
+         }
+      } catch (error) {
+         console.error("An unexpected error occurred:", error);
+      }
+   };
 
    const onSubmit = async (data: CourseCategoryFormData) => {
-
       setIsLoading(true);
       const { error, success }: any = await UpdateSingleCourseCategory(courseCategory.id, token, data);
       if (error) {
@@ -49,45 +84,51 @@ const UpdateCourseCategory = ({ token, courseCategory, faculty, department, stud
 
    return (
       <form onSubmit={handleSubmit(onSubmit)}>
-         <div className="grid col-auto text-gray-700 space-y-10 mx-auto p-10 md:p-16 bg-gray-200 w-full sm:w-3/4 md:w-1/2 lg:w-2/3">
+         <div className="grid col-auto text-gray-700 space-y-5 mx-auto p-10 md:p-16 bg-gray-200 w-full sm:w-3/4 md:w-1/2 lg:w-2/3">
             <h1 className="text-3xl font-bold mb-4">
-               Update <span className="text-orange-700 font-extralight inline-block ml-10">{courseCategory.short_code}</span>
+               <span className="text-orange-700 font-extralight inline-block">{courseCategory.short_code}</span>
             </h1>
             <SelectFormField<CourseCategoryFormData>
-               id={'faculty_id'}
                name="faculty_id"
+               label="Faculty"
                placeholder={"Select the Faculty"}
                control={control}
-               valueAsNumber
                error={errors.faculty_id}
+               options={faculties.map(faculty => ({ value: String(faculty.id), label: faculty.faculty_name }))}
+               onValueSelect={handleFacultyChange}
             />
             <SelectFormField<CourseCategoryFormData>
-               id={'department_id'}
                name="department_id"
+               label="Department"
                placeholder={"Select the Department"}
                control={control}
-               valueAsNumber
                error={errors.department_id}
+               options={selectedDepartments.map(item => ({ value: String(item.id), label: item.department_name }))}
             />
             <SelectFormField<CourseCategoryFormData>
-               id={'level'}
                name="level"
-               placeholder={"Select the study level"}
+               label="Level "
+               placeholder={"Select level"}
                control={control}
-               valueAsNumber
                error={errors.level}
+               options={studyLevels.map(item => ({ value: String(item.value), label: item.value }))}
             />
             <SelectFormField<CourseCategoryFormData>
-               id={'semester'}
                name="semester"
-               placeholder={"Select the Semester"}
+               label="Semester"
+               placeholder={"Select semesters"}
                control={control}
-               error={errors.semester}
+               error={errors.level}
+               options={semesters.map(item => ({ value: String(item.value), label: item.value }))}
             />
             <div className="flex justify-center w-full">
                <Button type='submit'>
                   Save New Department
-                  <ArrowRightIcon className="ml-2 h-5 w-5" />
+                  {
+                     (isLoading)
+                     ? (<Loader2 className="animate-spin" />)
+                     : (<ArrowRightIcon className="ml-2 h-5 w-5" />)                     
+                  }
                </Button>
             </div>
          </div>
@@ -99,17 +140,17 @@ export default UpdateCourseCategory
 
 export const UpdateCourseCategorySchema: ZodType<CourseCategoryFormData> = z
    .object({
-      faculty_id: z.number({ required_error: "Select Faculty", }),
-      department_id: z.number({ required_error: "Select Department", }),
-      level: z.number({ required_error: "Select Study Level", }),
+      faculty_id: z.string().min(1, "Faculty is required"),
+      department_id: z.string().min(1, "Select Department"),
+      level: z.string().min(1, "Select Study Level"),
       semester: z
          .string({ message: "Semester is required" })
          .min(3, "Semester should be at least 3 characters"),
    })
 
 type CourseCategoryFormData = {
-   faculty_id: number,
-   department_id: number,
-   level: number,
+   faculty_id: string,
+   department_id: string,
+   level: string,
    semester: string,
 };

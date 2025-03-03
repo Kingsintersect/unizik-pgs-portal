@@ -5,9 +5,18 @@ export const ADMIN_SIDENAV_ITEMS: SideNavItem[] = [
     icon: "HomeIcon",
   },
   {
-    title: "Users",
+    title: "User Management",
     path: "/dashboard/admin/users",
-    icon: "AcademicCapIcon",
+    icon: "GraduationCap",
+    submenu: true,
+    submenuItems: [
+      { title: "User / Roles", path: "/dashboard/admin/users" },
+      { title: "Bulk Upload", path: "/dashboard/admin/users/bulkupload" },
+      {
+        title: "Tutors Enrolment",
+        path: "/dashboard/admin/users/tutors-enrollment",
+      },
+    ],
   },
   {
     title: "Course Management",
@@ -42,16 +51,6 @@ export const ADMIN_SIDENAV_ITEMS: SideNavItem[] = [
       { title: "Local Gov", path: "/dashboard/admin/region/local-gov" },
     ],
   },
-  {
-    title: "Highschool Grades",
-    path: "/dashboard/admin/highschool/subjects",
-    icon: "NewspaperIcon",
-    submenu: true,
-    submenuItems: [
-      { title: "Class Subjects", path: "/dashboard/admin/highschool/subjects" },
-      { title: "Subject Grades", path: "/dashboard/admin/highschool/grades" },
-    ],
-  },
 ];
 export const STUDENT_SIDENAV_ITEMS: SideNavItem[] = [
   {
@@ -59,11 +58,11 @@ export const STUDENT_SIDENAV_ITEMS: SideNavItem[] = [
     path: "/dashboard/student",
     icon: "HomeIcon",
   },
-  // {
-  //    title: "My Account",
-  //    path: "/dashboard/student/profile",
-  //    icon: "UserIcon",
-  // },
+  {
+    title: "My Account",
+    path: "/dashboard/student/profile",
+    icon: "UserIcon",
+  },
 ];
 
 export const CreditLoads: CreditLoad[] = [
@@ -227,21 +226,23 @@ export const grades: Grade[] = [
   { id: 8, label: "E8", value: "E8" },
   { id: 9, label: "F9", value: "F9" },
 ];
-export const Programme: any[] = [
-  { id: 1, label: "Ordinary Level", value: "O'Level" },
-  { id: 2, label: "Advaced Level", value: "A'Level" },
-  { id: 3, label: "Ordiary National Diplomer", value: "OND" },
-  { id: 4, label: "Higher National Diplomer", value: "HND" },
-  { id: 5, label: "Bachalor's of science", value: "Bsc" },
+export const Program: Program[] = [
+  { id: 1, label: "Post Graduste Diploma", value: "PGD" },
+  { id: 1, label: "Masters Degree", value: "MASTERS" },
+  { id: 1, label: "Doctorate Degree", value: "PHD" },
+  { id: 1, label: "Professional Dregree", value: "PROFESSOR" },
+  // { id: 1, label: "Ordinary Level", value: "O'Level" },
+  // { id: 2, label: "Advaced Level", value: "A'Level" },
+  // { id: 3, label: "Ordiary National Diplomer", value: "OND" },
+  // { id: 4, label: "Higher National Diplomer", value: "HND" },
+  // { id: 5, label: "Bachalor's of science", value: "Bsc" },
 ];
-export const Department: any[] = [
-  { id: 1, label: "Computer Sciences", value: "Computer_sciences" },
-  { id: 2, label: "Agric Sciences", value: "Agric_sciences" },
-];
+
 export const Nationality: any[] = [
   { id: 1, label: "Nigerian", value: "Nigeria" },
   { id: 2, label: "Other", value: "other" },
 ];
+
 export const State: any[] = [
   { id: 1, label: "Abia", value: "Abia State" },
   { id: 2, label: "Adamawa", value: "Adamawa Statae" },
@@ -283,43 +284,4 @@ export const State: any[] = [
     label: "Federal Capital Territory",
     value: "Federal Capital Territory Statae",
   },
-];
-
-export const stateValues = [
-  "Abia State",
-  "Adamawa Statae",
-  "Akwa Ibom Statae",
-  "Anambra Statae",
-  "Bauchi Statae",
-  "Bayelsa Statae",
-  "Benue Statae",
-  "Borno Statae",
-  "Cross River Statae",
-  "Delta Statae",
-  "Ebonyi Statae",
-  "Edo Statae",
-  "Ekiti Statae",
-  "Enugu Statae",
-  "Gombe Statae",
-  "Imo Statae",
-  "Jigawa Statae",
-  "Kaduna Statae",
-  "Kano Statae",
-  "Katsina Statae",
-  "Kebbi Statae",
-  "Kogi Statae",
-  "Kwara Statae",
-  "Lagos Statae",
-  "Nasarawa Statae",
-  "Ogun Statae",
-  "Ondo Statae",
-  "Osun Statae",
-  "Oyo Statae",
-  "Plateau Statae",
-  "Rivers Statae",
-  "Sokoto Statae",
-  "Taraba Statae",
-  "Yobe Statae",
-  "Zamfara Statae",
-  "Federal Capital Territory Statae",
 ];

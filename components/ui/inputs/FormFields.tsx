@@ -181,62 +181,73 @@ export const CheckBoxFormField = <T extends Record<string, any>>({
 };
 
 // SELECT MENU FIELD DEFINITION
-export type SelectFormFieldProps<T extends Record<string, any>> = {
-   id: string;
-   name: Path<T>; // Ensure name is a valid path in the form schema
-   // register: UseFormRegister<T>;
-   control: Control<T>;// <-- Use control instead of register
-   error?: FieldError;
+interface SelectFormFieldProps<T extends Record<string, any>> {
+   name: keyof T;
+   control: Control<T>;
    label?: string;
-   data?: { value: string; label: string }[];
-   classList?: string;
-   valueAsNumber?: boolean;
-   validationRules?: object,
-   selected?: any,
-   handleChange?: any;
-   defaultValue?: any;
-   placeholder?: any;
-};
+   error?: FieldError;
+   options: { value: string; label: string }[];
+   placeholder?: string;
+   description?: string | ReactNode;
+   rules?: Record<string, any>;
+   onValueSelect?: (value: string) => void;
+   // defaultValue?: string;
+}
+
 export const SelectFormField = <T extends Record<string, any>>({
    name,
-   id,
-   label,
    control,
+   label,
    error,
-   data = [],
-   classList,
-   valueAsNumber,
-   validationRules,
-   selected,
-   handleChange,
-   defaultValue,
+   options,
    placeholder,
-}: SelectFormFieldProps<T>) => (
-  <div className={cn("w-full relative", classList)}>
-    {label && <label htmlFor={id} className="mb-2 block">{label}</label>}
-    
-      <Controller
-         name={name}
-         control={control}
-         render={({ field }) => (
-         <Select onValueChange={field.onChange} value={field.value ?? ""} defaultValue={field.value}>
-            <SelectTrigger id={id}>
-               <SelectValue placeholder={placeholder} />
-            </SelectTrigger>
-            <SelectContent>
-               {data.map((item) => (
-               <SelectItem key={item.value} value={item.value}>
-                  {item.label}
-               </SelectItem>
-               ))}
-            </SelectContent>
-         </Select>
-         )}
-      />
+   description,
+   rules,
+   onValueSelect,
+   // defaultValue="",
+}: SelectFormFieldProps<T>) => {
+   return (
+      <div className="w-full">
+         {label && <label className="mb-2 block text-sm font-medium text-gray-700">{label}</label>}
+         <Controller
+            name={name as any}
+            control={control} 
+            // rules={{ required: "Faculty is required" }} // Add required validation
+            rules={rules}
+            render={({ field }) => (
+               <Select
+                  key={field.value}
+                  onValueChange={(value) => {
+                     field.onChange(String(value));
+                     field.onBlur();
+                     if (onValueSelect) {
+                        onValueSelect(String(value));
+                     }
+                  }}
+                  value={String(field.value) || ""}
+                  defaultValue={String(field.value)}
+               >
+                  <SelectTrigger>
+                     <SelectValue placeholder={placeholder || "Select an option"}>
+                        {field.value ? options.find((opt) => opt.value === field.value)?.label : ""}
+                     </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                     {options.map((option) => (
+                        <SelectItem key={String(option.value)} value={String(option.value)}>
+                           {option.label}
+                        </SelectItem>
+                     ))}
+                  </SelectContent>
+               </Select>
+            )}
+         />
+         {description && <p className="text-sm text-gray-500 mt-1">{description}</p>}
+         {error && <p className="text-xs text-red-500 mt-1">{error.message}</p>}
+      </div>
+   );
+};
 
-    {error && <span className="text-xs text-red-400">{error.message}</span>}
-  </div>
-);
 
 
 // TEXTAREA FIRM FIELD

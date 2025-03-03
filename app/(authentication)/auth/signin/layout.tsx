@@ -17,7 +17,7 @@ const Layout: NextPage<LayoutProps> = ({ children }: LayoutProps) => {
 
    return (
       <main className='account'>
-          <Header/>
+         <Header/>
          <div className="account-container">
             <div className="wrapper bg-[#efb5a2]">
                <Section classList='mx-0 p-0 h-screen text-black bg-gray-200' title={''}>

@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useState } from 'react';
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z, ZodType } from 'zod';
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, Loader2 } from "lucide-react";
 import { CreateNewCountry } from '@/app/actions/server.admin';
 import { notify } from '@/contexts/ToastProvider';
 import { baseUrl } from '@/config';
@@ -56,7 +56,11 @@ const CreateCountry = ({ token }: { token: string }) => {
             <div className="flex justify-center w-full">
                <Button type='submit'>
                   Save New Country
-                  <ArrowRightIcon className="ml-2 h-5 w-5" />
+                  {
+                     (isLoading)
+                     ? (<Loader2 className="animate-spin" />)
+                     : (<ArrowRightIcon className="ml-2 h-5 w-5" />)                     
+                  }
                </Button>
             </div>
          </div>

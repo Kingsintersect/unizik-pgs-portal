@@ -3,35 +3,44 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableCheckboxColumn, DataTableColumnHeader } from "@/components/ui/datatable/DataTableColumnHeader";
 import { ActionMenu } from "@/components/ui/datatable/ActionMenu";
-import { UpdateSingleCourse, UpdateSingleFaculty } from "@/app/actions/server.admin";
-import { StatusCell } from "@/components/StatusToggle";
+import { DeleteSingleCourse } from "@/app/actions/server.admin";
+import { baseUrl } from "@/config";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type CoursesTableColum = {
+export type CoursesTableColumType = {
     id: string
-    name: string
-    status: 1 | 0
+    course_title: string
+    course_code: string
+    actions: string
 }
+const basePath = `${baseUrl}/dashboard/admin/course-management/courses`;
 
-export const courses_columns: ColumnDef<CoursesTableColum>[] = [
-    DataTableCheckboxColumn<CoursesTableColum>(),
+export const courses_columns: ColumnDef<Partial<CoursesTableColumType>>[] = [
+    DataTableCheckboxColumn<Partial<CoursesTableColumType>>(),
     {
-        accessorKey: "name",
+        accessorKey: "course_title",
         header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Name" />
+        <DataTableColumnHeader column={column} title="TITLE" />
         ),
     },
     {
-        accessorKey: "status",
+        accessorKey: "course_code",
         header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Status" />
+        <DataTableColumnHeader column={column} title="CODE" />
         ),
-        cell: (props) => <StatusCell {...props} method={UpdateSingleCourse} />,
     },
     {
         id: "actions",
-        cell: ({ row }) => <ActionMenu row={row.original} onCopy={(id) => navigator.clipboard.writeText(id)} />,
+        header: "Actions",
+        cell: ({ row }) => <ActionMenu
+            row={row.original  as CoursesTableColumType}
+            onCopy={(id) => navigator.clipboard.writeText(id)}
+            onDelete={DeleteSingleCourse}
+            menu={[
+                {title: "Edit Data", url:`${basePath}/${row.original.id}/edit`},
+            ]}
+        />,
     },
 ]
 

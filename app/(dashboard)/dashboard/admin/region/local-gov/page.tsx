@@ -1,78 +1,127 @@
+"use client";
 import Search from '@/components/ui/inputs/Search'
 import { baseUrl } from '@/config'
-import { verifySession } from '@/lib/server.utils'
 import { PlusIcon } from 'lucide-react'
 import { Button } from "@/components/ui/button"
-import SelectMenu from '@/components/SelectMenu';
-import CustomCard from '@/components/CustomCard';
-import Link from 'next/link'
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { DataTable } from '@/components/ui/datatable/DataTable'
 import { lga_columns } from './lga_table.columns'
 import { GetListOfLocalGov } from '@/app/actions/server.admin'
-import { notify } from '@/contexts/ToastProvider'
-import { loginSessionKey } from '@/lib/definitions';
+import { Card } from '@/components/ui/card';
+import ExportDropdown from '@/components/ExportDropdown';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { filterData } from '@/lib/utils';
+import Link from 'next/link';
 
 export const dynamic = "force-dynamic";
 
-const page = async () => {
-   const session = await verifySession(loginSessionKey);
-   const basePath = `${baseUrl}/dashboard/admin/region/local-gov`;
+const LocalGovAreaPage = () => {
+   const [localGovAreas, setLocalGovAreas] = useState<any[]>([]);
+   const [filter, setFilter] = useState("ALL");
+   const [searchQuery, setSearchQuery] = useState("");
+   const [loading, setLoading] = useState(true);
+   const [error, setError] = useState<string | null>(null);
+   const basePath: string = `${baseUrl}/dashboard/admin/region/local-gov`;
 
-   const { error, success }: any = await new Promise((resolve) => resolve(GetListOfLocalGov(session.token)));
-      if (error) notify({ message: "Their was an error trying to get Local Government list", variant: "error", timeout: 5000 });
-      const ascendingData = [...success.data].sort((a, b) => a.id - b.id);
-      const descendingData = [...success.data].sort((a, b) => b.id - a.id);
+   const fetchLocalGovArea = async () => {
+      setLoading(true);
+      setError(null); // Reset error state
+
+      try {
+         const { success, error } = await GetListOfLocalGov();
+         if (success) {
+            const sortedData = success.data.sort((a: any, b: any) => b.id - a.id);
+            setLocalGovAreas(sortedData);
+         } else if (error) {
+            setError(error.message || "Failed to fetch faculties");
+         }
+      } catch (err) {
+         setError("An unexpected error occurred.");
+      } finally {
+         setLoading(false);
+      }
+   };
+
+   useEffect(() => {
+      let isMounted = true;
+         fetchLocalGovArea().catch(console.error);
+         return () => { isMounted = false; }; // Cleanup on unmount
+   }, []);
+
+   const filteredData = useMemo(() =>
+      filterData(localGovAreas, "status", filter, ["name"], searchQuery),
+      [filter, searchQuery, localGovAreas]
+   ); 
+   
    return (
       <>
-         <div className="grid sm:grid-cols-2 gap-3 md:gap-10">
-            <div className="search">
-               <Search name={'search'}  placeholder='Search for a department' />
-            </div>
-            <div className="search flex justify-end">
-               <SelectMenu
-                  placeholder='Theme'
-                  menu={[
-                     { title: 'namae', value: "namae" },
-                  ]}
-               />
-            </div>
-         </div>
-         <CustomCard
-            className='mt-7'
-            title="Local Government Area"
-            description="List Of Local Goverment Area"
-            titleClassName='text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-7'
-            contentClassName='font-normal text-gray-700 dark:text-gray-400 space-y-10 mb-7'
-         >
-            <div className="flex items-center justify-between">
-               <div className="flex gap-2 items-center">
-                  <span>Show</span>
-                  <SelectMenu
-                     placeholder='Numbers of entries'
-                     menu={[
-                        { title: '10', value: "10" },
-                        { title: '20', value: "20" },
-                        { title: '30', value: "30" },
-                     ]}
+         <Card className="mt-7 p-10">
+            <header className="w-full flex items-center justify-between text-orange-500 font-bold">
+               <h5 className="text-2xl font-bold tracking-tight text-[#23628d] dark:text-white mb-7">
+                  Local Governmnet Area List
+               </h5>
+               {localGovAreas && localGovAreas.length > 0 && (
+                  <ExportDropdown
+                     label='Export LGA Data'
+                     data={localGovAreas}
+                     columns={
+                        [
+                           'name',
+                        ]
+                     }
                   />
-                  <span>entries</span>
+               )}
+            </header>
+            <div className="font-normal text-gray-700 dark:text-gray-400 space-y-10 mb-7">
+               <div className="grid sm:grid-cols-2 gap-3 md:gap-10">
+                  <div className="search">
+                     <Search
+                        name={'search'}
+                        placeholder='Search by name...'
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="p-3 rounded w-full"
+                     />
+                  </div>
+                  <div className="search flex justify-end gap-5">
+                     <Select
+                        onValueChange={(value: string) => setFilter(value)} 
+                        defaultValue={filter}
+                     >
+                        <SelectTrigger className='w-[280px]'>
+                           <SelectValue placeholder="SelectFilter Key" />
+                        </SelectTrigger>
+                        <SelectContent>
+                           <SelectItem value="ALL">All LGA</SelectItem>
+                           <SelectItem value="1">Active</SelectItem>
+                           <SelectItem value="0">InActive</SelectItem>
+                        </SelectContent>
+                     </Select>
+                  </div>
                </div>
-               <div className="">
-                  <Link href={`${basePath}/create`} >
-                     <Button>
-                        <PlusIcon className="h-5 md:ml-4" />
-                        Create New Course Category
-                     </Button>
-                  </Link>
+               <div className="flex flex-col">
+                  <div className="">
+                     <Link href={`${basePath}/create`} >
+                        <Button variant={'secondary'}>
+                           <PlusIcon className="h-5 md:ml-4" />
+                           Create New LGA
+                        </Button>
+                     </Link>
+                  </div>
+               </div>
+               <div className="grid grid-cols-1">
+                  <DataTable columns={lga_columns} data={filteredData} />
                </div>
             </div>
-            <div className="">
-              <DataTable columns={lga_columns} data={descendingData} />
-            </div>
-         </CustomCard>
+         </Card>
       </>
    )
 }
 
-export default page
+export default LocalGovAreaPage

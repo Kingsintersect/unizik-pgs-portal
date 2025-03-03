@@ -7,9 +7,8 @@ import { loginSessionKey } from '@/lib/definitions';
 
 export const dynamic = "force-dynamic";
 
-const page = async ({ params, searchParams }: { params: { id: string }, searchParams: { [key: string]: string  } }) => {
+const page = async ({ params }: { params: { id: string } }) => {
    const id = params.id;
-   const { parent } = searchParams;
    const session = await verifySession(loginSessionKey);
    const [country, state]: any = await Promise.all([
       GetListOfCountries(),
@@ -32,10 +31,10 @@ const page = async ({ params, searchParams }: { params: { id: string }, searchPa
    return (
       <main className='space-y-10'>
          <div className="p-6">
-            <BreadcrumbResponsive items={breadcrumbItems} itemsToDisplay={3} />
+            {/* {breadcrumbItems && <BreadcrumbResponsive items={breadcrumbItems} itemsToDisplay={3} />} */}
          </div>
          <div className="w-full bg-white shadow-lg rounded-md px-7 py-20">
-            <UpdateState parent={parent} country={country.success} token={session.token} state={state.success.data} />
+            <UpdateState token={session.token} state={state.success.data} />
          </div>
       </main>
    )

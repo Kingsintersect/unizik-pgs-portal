@@ -17,6 +17,9 @@ import { baseUrl } from '@/config';
 import { DataTable } from '@/components/ui/datatable/DataTable';
 import { user_columns } from './user_table.columns';
 import { filterData } from '@/lib/utils';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { BookPlusIcon } from 'lucide-react';
 
 const UsersPage = () => {
    const basePath = `${baseUrl}/dashboard/admin/users`;
@@ -37,8 +40,6 @@ const UsersPage = () => {
             if (error) {
                console.error('Error Fetching user Data: ', error.message);
             }
-         } else {
-            console.error("User Auth Token Not Found!!!");
          }
       }
       getAlluser();
@@ -97,6 +98,16 @@ const UsersPage = () => {
                            <SelectItem value="MANAGER">Managers</SelectItem>
                         </SelectContent>
                      </Select>
+                  </div>
+               </div>
+               <div className="flex flex-col">
+                  <div className="">
+                     <Link href={`${basePath}/bulkupload`} >
+                        <Button variant={'secondary'}>
+                           <BookPlusIcon className="h-5 md:ml-4" />
+                           Bulk User Upload
+                        </Button>
+                     </Link>
                   </div>
                </div>
                <div className="grid grid-cols-1">

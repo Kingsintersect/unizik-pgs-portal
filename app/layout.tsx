@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className}  bg-[#fcece6]`}>
+      <body>
         <UserProvider>
           <AppProvider>
             <ToastProvider />

@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { z, ZodType } from 'zod';
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, Loader2 } from "lucide-react";
 import { InputFormField, TextareaFormField } from '@/components/ui/inputs/FormFields';
 import { Button } from '@/components/ui/button';
 
@@ -29,11 +29,10 @@ const UpdateCourse = ({ token, course }: { token: string, course: Course }) => {
    }, [course, reset]);
 
    const onSubmit = async (data: CourseFormData) => {
-
       setIsLoading(true);
       const { error, success }: any = await UpdateSingleCourse(course.id, token, data);
       if (error) {
-         console.log('error', error)
+         console.error('error', error)
          setIsLoading(false);
          notify({ message: 'Failed to create course! Try again.', variant: "error", timeout: 5000 });
          return;
@@ -79,7 +78,11 @@ const UpdateCourse = ({ token, course }: { token: string, course: Course }) => {
             <div className="flex justify-center w-full">
                <Button type='submit'>
                   Save New Department
-                  <ArrowRightIcon className="ml-2 h-5 w-5" />
+                  {
+                     (isLoading)
+                     ? (<Loader2 className="animate-spin" />)
+                     : (<ArrowRightIcon className="ml-2 h-5 w-5" />)                     
+                  }
                </Button>
             </div>
          </div>

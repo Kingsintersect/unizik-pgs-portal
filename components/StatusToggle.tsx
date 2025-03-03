@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import useToken from "@/hook/useToken";
 import { useSession } from "@/hook/useSession";
 import { notify } from "@/contexts/ToastProvider";
+import { Loader2 } from "lucide-react";
 
 interface StatusToggleProps {
     id: string;
@@ -19,13 +20,13 @@ export const StatusToggle: React.FC<StatusToggleProps> = ({ id, status, method }
 
     const toggleStatus = async () => {
         const newStatus = isChecked ? 0 : 1; // Toggle status
-        setIsChecked(!isChecked);
 
         if (token) {
             try {
                 const response = await method(id, token, { status: newStatus }); // Update in DB
                 const { error, success } = response;
                 if (success) {
+        setIsChecked(!isChecked);
                     notify({ message: 'Status Updated!', variant: "success", timeout: 5000 })
                 }
                 if (error) {
@@ -55,7 +56,7 @@ export const StatusToggle: React.FC<StatusToggleProps> = ({ id, status, method }
 export const StatusCell: React.FC<{ row: { original: { id: string; status: 1 | 0 } }, method:any }> = ({ row, method }) => {
     const { session, loading } = useSession(); // Use the reusable hook
 
-    if (loading) return <span>Loading...</span>;
+    if (loading) return <Loader2 className="animate-spin" />;
     if (!session) return <span>Error fetching session</span>;
 
     return (

@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useState } from 'react';
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z, ZodType } from 'zod';
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, Loader2 } from "lucide-react";
 import { CreateNewDepartment } from '@/app/actions/server.admin';
 import { notify } from '@/contexts/ToastProvider';
 import { baseUrl } from '@/config';
@@ -11,8 +11,7 @@ import { useRouter } from 'next/navigation';
 import { InputFormField, SelectFormField } from '@/components/ui/inputs/FormFields';
 import { Button } from '@/components/ui/button';
 
-
-const CreateDeparment = ({ faculty, token }: { faculty: Faculty[], token: string }) => {
+const CreateDeparment = ({ faculties, token }: { faculties: Faculty[], token: string }) => {
    const {
       register,
       handleSubmit,
@@ -39,19 +38,20 @@ const CreateDeparment = ({ faculty, token }: { faculty: Faculty[], token: string
             router.refresh();
       }
    }
+   
 
    return (
       <form onSubmit={handleSubmit(onSubmit)}>
-         <div className="grid col-auto text-gray-700 space-y-10 mx-auto p-10 md:p-16 bg-gray-200 w-full sm:w-3/4 md:w-1/2 lg:w-2/3">
+         <div className="grid col-auto text-gray-700 space-y-5 mx-auto p-10 md:p-16 bg-gray-200 w-full sm:w-3/4 md:w-1/2 lg:w-2/3">
             <h1 className="text-3xl font-bold mb-4">
-               Create <span className="text-orange-700 font-extralight inline-block ml-10">{"New Department"}</span>
+               Create <span className="text-orange-700 font-extralight inline-block">{"New Department"}</span>
             </h1>
             <SelectFormField<DeparmentFormData>
-               id={'parent'}
                name="faculty_id"
-               placeholder={"Select the Faculty"}
                control={control}
-               valueAsNumber
+               label="Select Faculty"
+               options={faculties.map(faculty => ({ value: String(faculty.id), label: faculty.faculty_name }))}
+               placeholder="Choose a faculty"
                error={errors.faculty_id}
             />
             <InputFormField<DeparmentFormData>
@@ -62,18 +62,15 @@ const CreateDeparment = ({ faculty, token }: { faculty: Faculty[], token: string
                register={register}
                error={errors.department_name}
             />
-            {/* <TextareaFormField<DeparmentFormData>
-               id="description"
-               rows={3}
-               placeholder="Short note about the new Department"
-               name="description"
-               register={register}
-               error={errors.description} cols={0} /> */}
 
             <div className="flex justify-center w-full">
                <Button type='submit'>
                   Save New Department
-                  <ArrowRightIcon className="ml-2 h-5 w-5" />
+                  {
+                     (isLoading)
+                     ? (<Loader2 className="animate-spin" />)
+                     : (<ArrowRightIcon className="ml-2 h-5 w-5" />)                     
+                  }
                </Button>
             </div>
          </div>
@@ -85,19 +82,13 @@ export default CreateDeparment
 
 export const CreateDepartmentSchema: ZodType<DeparmentFormData> = z
    .object({
-      faculty_id: z.number({ required_error: "Select Faculty", }),
+      faculty_id: z.string().min(1, "Faculty is required"),
       department_name: z
          .string({ message: "Title is required" })
          .min(3, "Title should be at least 3 characters"),
-      // despription: z.string().optional(),
    })
 
 type DeparmentFormData = {
-   faculty_id: number,
+   faculty_id: string,
    department_name: string,
-   // description?: string,
 };
-
-
-// const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB in bytes
-// const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png"];

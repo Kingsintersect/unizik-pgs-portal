@@ -12,26 +12,28 @@ interface UserContextType {
    user: User | null;
    setUser: (user: User | null) => void;
    logout: () => void;
+   isLoading: boolean;
 }
 
-// Create context
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-// Provider component
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
    const { token } = useToken();
    const [user, setUser] = useState<User | null>(null);
+   const [isLoading, setIsLoading] = useState(false);
     
-       // Load cached user after the component mounts (client-side only)
    useEffect(() => {
       if (typeof window !== "undefined") {
+         setIsLoading(true);
         const storedUser = localStorage.getItem("user");
-        if (storedUser) {
+        if (storedUser !== null) {
             try {
-                setUser(JSON.parse(storedUser));
+               setUser(JSON.parse(storedUser));
             } catch (error) {
                 console.error("Error parsing stored user:", error);
-                localStorage.removeItem("user"); // Remove invalid JSON data
+                localStorage.removeItem("user"); 
+            } finally {
+               setIsLoading(false);
             }
         }
     }
@@ -41,17 +43,18 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       if (!token || user) return;
 
       const fetchUser = async () => {
+         setIsLoading(true);
          try {
             const { success, error } = await getUser();
             if (success) {
-               setUser(success.user);
-               localStorage.setItem("user", JSON.stringify(success.user));
+               setUser(success.data);
+               localStorage.setItem("user", JSON.stringify(success.data));
             } else {
                console.error("User fetch error:", error?.message);
             }
          } catch (err) {
             console.error("Unexpected error fetching user:", err);
-         }
+         } finally { setIsLoading(false); }
       };
 
       fetchUser();
@@ -65,7 +68,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
    };
 
    return (
-      <UserContext.Provider value={{ user, setUser, logout }}>
+      <UserContext.Provider value={{ user, isLoading, setUser, logout }}>
          {children}
       </UserContext.Provider>
    );

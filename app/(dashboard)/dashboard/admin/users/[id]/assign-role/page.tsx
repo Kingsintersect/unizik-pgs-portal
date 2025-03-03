@@ -131,13 +131,12 @@ const AssignRole = ({ params }: { params: { id: string } }) => {
                            <hr className='border-t-red-400 mb-5' />
                            <form onSubmit={handleSubmit(onSubmit)} className={'space-y-10'}>
                               <SelectFormField<UpdateUserRoleFormData>
-                                 id={'role'}
                                  name="role"
-                                 // register={register}
+                                 label={"User Roles"}
+                                 placeholder={"Choose a Role"}
                                  control={control}
+                                 options={UserRoles.map((role: any) => ({ value: String(role.value), label: role.label }))}
                                  error={errors.role}
-                                 data={UserRoles}
-                                 placeholder={"Roles"}
                               />
                               <Button
                                  type="submit"

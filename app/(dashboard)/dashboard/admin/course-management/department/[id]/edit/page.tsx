@@ -36,10 +36,10 @@ const Page = async ({ params }: { params: { id: string } }) => {
    return (
       <main className='space-y-10'>
          <div className="p-6">
-            <BreadcrumbResponsive items={breadcrumbItems} itemsToDisplay={3} />
+            {/* {breadcrumbItems && <BreadcrumbResponsive items={breadcrumbItems} itemsToDisplay={3} />} */}
          </div>
          <div className="w-full bg-white shadow-lg rounded-md px-7 py-20">
-            <UpdateDeparment faculty={faculty.success.data} department={department.success.data} token={session.token} />
+            <UpdateDeparment faculties={faculty.success.data} department={department.success.data} token={session.token} />
          </div>
       </main>
    )

@@ -1,16 +1,11 @@
 
 "use client";
 import { baseUrl } from '@/config';
-import { verifySession } from '@/lib/server.utils';
 import { PlusIcon } from 'lucide-react';
 import Link from 'next/link';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Button } from "@/components/ui/button"
-import SelectMenu from '@/components/SelectMenu';
-import CustomCard from '@/components/CustomCard';
-import FacultyTable from './components/FacultyTable';
 import { GetListOfFaculties } from '@/app/actions/server.admin';
-import Spinner from '@/components/ui/application/Spinner';
 import { DataTable } from '@/components/ui/datatable/DataTable';
 import { faculty_columns } from './faculty_table.columns';
 import { Card } from '@/components/ui/card';
@@ -71,10 +66,11 @@ const Faculty = () => {
          <Card className="mt-7 p-10">
             <header className="w-full flex items-center justify-between text-orange-500 font-bold">
                <h5 className="text-2xl font-bold tracking-tight text-[#23628d] dark:text-white mb-7">
-                  All Users
+                  Faculty List
                </h5>
                {faculties && faculties.length > 0 && (
                   <ExportDropdown
+                     label='Export Faculty Data'
                      data={faculties}
                      columns={
                         [
@@ -104,11 +100,21 @@ const Faculty = () => {
                            <SelectValue placeholder="SelectFilter Key" />
                         </SelectTrigger>
                         <SelectContent>
-                           <SelectItem value="ALL">All Users</SelectItem>
+                           <SelectItem value="ALL">All Faculties</SelectItem>
                            <SelectItem value="1">Active</SelectItem>
                            <SelectItem value="0">InActive</SelectItem>
                         </SelectContent>
                      </Select>
+                  </div>
+               </div>
+               <div className="flex flex-col">
+                  <div className="">
+                     <Link href={`${basePath}/create`} >
+                        <Button variant={'secondary'}>
+                           <PlusIcon className="h-5 md:ml-4" />
+                           Create New Faculty
+                        </Button>
+                     </Link>
                   </div>
                </div>
                <div className="grid grid-cols-1">

@@ -174,3 +174,9 @@ html {
 [type="radio"]:checked {
   background-size: 2em 2em !important;
 }
+
+/* Force ShadCN Carousel to be full width & height
+.carousel > div {
+  width: 100% !important;
+  height: 100% !important;
+} */

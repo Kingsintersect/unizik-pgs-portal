@@ -74,3 +74,15 @@ export const getUser = async () => {
     return { error: { message: "Token not found" }, success: null };
   }
 };
+export const BulkUserUpload = async (token: string, data: any) => {
+  const response = (await apiCallerBeta({
+    url: `${remoteApiUrl}/account/multi-user-upload`,
+    method: "POST",
+    data: data,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
+  })) as any;
+  return response;
+};

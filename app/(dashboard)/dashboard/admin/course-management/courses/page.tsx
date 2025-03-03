@@ -1,17 +1,10 @@
+"use client";
 import Search from '@/components/ui/inputs/Search';
 import { baseUrl } from '@/config';
-import { verifySession } from '@/lib/server.utils';
-import { PlusIcon } from 'lucide-react';
+import { Loader2, PlusIcon } from 'lucide-react';
 import Link from 'next/link';
-import React from 'react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import React, { useEffect, useMemo, useState } from 'react'
+import {Card} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -23,83 +16,119 @@ import {
 import { DataTable } from '@/components/ui/datatable/DataTable';
 import { courses_columns } from './courses_table.columns';
 import { GetListOfCourses } from '@/app/actions/server.admin';
-import { loginSessionKey } from '@/lib/definitions';
+import { filterData } from '@/lib/utils';
+import ExportDropdown from '@/components/ExportDropdown';
+import useToken from '@/hook/useToken';
 
 export const dynamic = "force-dynamic";
 
-const page = async () => {
-   const session = await verifySession(loginSessionKey);
+const CoursesPage = () => {
+   const [courses, setCourses] = useState<any[]>([]);
+   const [filter, setFilter] = useState("ALL");
+   const [searchQuery, setSearchQuery] = useState("");
+   const [loading, setLoading] = useState(true);
+   const [error, setError] = useState<string | null>(null);
+   const { token } = useToken();
    const basePath = `${baseUrl}/dashboard/admin/course-management/courses`;
 
-   let descendingData: any[]
-   
-   const { error, success }: any = await new Promise((resolve) => resolve(GetListOfCourses(session.token)));
-   if (success) {
-      const ascendingData = [...success.data].sort((a, b) => a.id - b.id);
-      descendingData = [...success.data].sort((a, b) => b.id - a.id);
-   } else {
-      descendingData = [];
-   }
+   const fetchCourses = async (token: string) => {
+      setLoading(true);
+      setError(null); // Reset error state
+
+      try {
+         const { success, error } = await GetListOfCourses(token);
+         if (success) {
+            const sortedData = success.data.sort((a: any, b: any) => b.id - a.id);
+            setCourses(sortedData);
+         } else if (error) {
+            setError(error.message || "Failed to fetch courses");
+         }
+      } catch (err) {
+         setError("An unexpected error occurred.");
+      } finally {
+         setLoading(false);
+      }
+   };
+
+   useEffect(() => {
+      let isMounted = true;
+      if (token) {
+         fetchCourses(token).catch(console.error);
+         return () => { isMounted = false; }; // Cleanup on unmount
+      }
+   }, [token]);
+
+   const filteredData = useMemo(() =>
+      filterData(courses, "status", filter, ["course_title"], searchQuery),
+      [filter, searchQuery, courses]
+   )
 
    return (
       <>
-         <div className="grid sm:grid-cols-2 gap-3 md:gap-10">
-            <div className="search">
-               <Search name={'search'}  placeholder='Search for a department' />
-            </div>
-            <div className="search flex justify-end">
-               <Select>
-                  <SelectTrigger className="w-[180px]">
-                     <SelectValue placeholder="Theme" />
-                  </SelectTrigger>
-                  <SelectContent>
-                     <SelectItem value="name">Name</SelectItem>
-                  </SelectContent>
-               </Select>
-            </div>
-         </div>
-         <Card className="mt-7">
-            <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-7">
-               List Of Courses
-            </h5>
-            <CardHeader>
-               <CardTitle className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-7">List Of Courses</CardTitle>
-            </CardHeader>
-            <CardContent className="font-normal text-gray-700 dark:text-gray-400 space-y-10 mb-7">
-               <div className="flex items-center justify-between">
-                  <div className="flex gap-2 items-center">
-                     <span>Show</span>
-                     <Select>
-                        <SelectTrigger className="w-[180px]">
-                           <SelectValue placeholder="Theme" />
+         <Card className="mt-7 p-10">
+            <header className="w-full flex items-center justify-between text-orange-500 font-bold">
+               <h5 className="text-2xl font-bold tracking-tight text-[#23628d] dark:text-white mb-7">
+                  Course List
+               </h5>
+               {courses && courses.length > 0 && (
+                  <ExportDropdown
+                     label='Export Course Data'
+                     data={courses}
+                     columns={
+                        [
+                           'course_title',
+                           'course_code',
+                           'description',
+                           'image_url',
+                        ]
+                     }
+                  />
+               )}
+            </header>
+            <div className="font-normal text-gray-700 dark:text-gray-400 space-y-10 mb-7">
+               <div className="grid sm:grid-cols-2 gap-3 md:gap-10">
+                  <div className="search">
+                     <Search
+                        name={'search'}
+                        placeholder='Search by name...'
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="p-3 rounded w-full"
+                     />
+                  </div>
+                  <div className="search flex justify-end gap-5">
+                     <Select
+                        onValueChange={(value: string) => setFilter(value)} 
+                        defaultValue={filter}
+                     >
+                        <SelectTrigger className='w-[280px]'>
+                           <SelectValue placeholder="SelectFilter Key" />
                         </SelectTrigger>
                         <SelectContent>
-                           <SelectItem value="10">10</SelectItem>
-                           <SelectItem value="20">20</SelectItem>
-                           <SelectItem value="30">30</SelectItem>
-                           <SelectItem value="40">40</SelectItem>
-                           <SelectItem value="50">50</SelectItem>
+                           <SelectItem value="ALL">All Courses</SelectItem>
+                           <SelectItem value="1">Active</SelectItem>
+                           <SelectItem value="0">InActive</SelectItem>
                         </SelectContent>
                      </Select>
-                     <span>entries</span>
                   </div>
+               </div>
+               <div className="flex flex-col">
                   <div className="">
                      <Link href={`${basePath}/create`} >
-                        <Button>
+                        <Button variant={'secondary'}>
                            <PlusIcon className="h-5 md:ml-4" />
                            Create New Course
                         </Button>
                      </Link>
                   </div>
                </div>
-               <div className="">
-                  <DataTable columns={courses_columns} data={descendingData} />
+               <div className="grid grid-cols-1">
+                  <DataTable columns={courses_columns} data={filteredData} />
                </div>
-            </CardContent>
-            
+            </div>
          </Card>
       </>
    )
 }
 
-export default page
+export default CoursesPage
