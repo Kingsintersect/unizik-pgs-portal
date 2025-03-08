@@ -18,8 +18,7 @@ export default async function middleware(req: NextRequest) {
   const isStudentRoute = path.startsWith(studentRoutePrefix);
   const isAdminRoute = path.startsWith(adminRoutePrefix);
 
-  // const loginSession = (await getSession(loginSessionKey)) as SessionData;
-  const loginSession = await getFullSession();
+  const loginSession = (await getSession(loginSessionKey)) as SessionData;
 
   // 5. Redirect to /login if the user is not authenticated
   if (isProtectedRoute && !loginSession?.id) {
