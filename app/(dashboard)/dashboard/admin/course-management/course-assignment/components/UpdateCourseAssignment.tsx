@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { z, ZodType } from 'zod';
 import { notify } from '@/contexts/ToastProvider';
 import { ArrowRightIcon, Loader2 } from "lucide-react";
-import { GetCoursesAssignedToACategory, UpdateSingleCourseAssignment } from '@/app/actions/server.admin';
+import { DeleteSingleAssignment, GetCoursesAssignedToACategory, UpdateSingleCourseAssignment } from '@/app/actions/server.admin';
 import { Button } from '@/components/ui/button';
 import { SelectFormField } from '@/components/ui/inputs/FormFields';
 import {
@@ -55,7 +55,7 @@ const UpdateCourseAssignment = ({
 }: UpdateCourseAssignmentProps) => {
    const {
       handleSubmit,
-      formState: { errors },
+      formState: { errors, isValid, isSubmitting },
       control,
       reset,
    } = useForm<CourseAssignmentFormData>({
@@ -64,7 +64,6 @@ const UpdateCourseAssignment = ({
          course_category_id: String(selectedCategoryId ?? ""),
       }
     });
-   const [isLoading, setIsLoading] = useState<boolean>(false);
    const router = useRouter();
 
    const [selectedCourse, setSelectedCourse] = useState('');
@@ -74,11 +73,13 @@ const UpdateCourseAssignment = ({
    const [availableCourses, setAvailableCourses] = useState<Course[]>(courses || []);
    const [assignmentErrors, setAssignmentErrors] = useState<{ course: string; credit_load: string }>({ course: '', credit_load: '' });
    const [editingRowIndex, setEditingRowIndex] = useState<number | null>(null);
+   const [toDeleteCourseCategory, setToDeleteCourseCategory] = useState<string|null>(null);
 
 
    // COURSE ASSIGNMENT
    const handleCategoryCourseChange = async (courseCategoryId: string) => {
       if (!courseCategoryId) return;
+      setToDeleteCourseCategory(courseCategoryId);
 
       try {
          const { error, success }: any = await GetCoursesAssignedToACategory(courseCategoryId, token);
@@ -181,27 +182,46 @@ const UpdateCourseAssignment = ({
       setCreditLoad('');
    };
 
-   const handleDeleteRow = (index: number) => {
+   const deleteAssignmentApi = async (courseCategoryId: number, courseId: number, creditLoad: number): Promise<boolean> => {
+      let deleted = false;
+      const { success, error } = await DeleteSingleAssignment(token, courseCategoryId, courseId, creditLoad);
+      if (error) {
+         console.error("Delete Row Error!", error)
+         notify({ message: 'Row data could not be deleted', variant: "error", timeout: 5000 });
+         deleted = false;
+      }
+      if (success) {
+         notify({ message: 'Deleted successfully', variant: "success", timeout: 5000 });
+         deleted = true;
+      }
+      return deleted;
+   }
+
+   const handleDeleteRow = async (index: number) => {
       const deletedRow = rows[index];
-      const updatedRows = rows.filter((_, i) => i !== index);
-      setRows(updatedRows);
+      // console.log(deletedRow, toDeleteCourseCategory); return;
+      const deleteApiResult = await deleteAssignmentApi(Number(toDeleteCourseCategory!), deletedRow.course_id, deletedRow.credit_load);
+      if (deleteApiResult) {
+         const updatedRows = rows.filter((_, i) => i !== index);
+         setRows(updatedRows);
 
-      const updatedAvailableCourses = [
-         ...availableCourses,
-         courses.find(course => course.course_code === deletedRow.course)!
-      ];
-      setAvailableCourses(updatedAvailableCourses);
+         const updatedAvailableCourses = [
+            ...availableCourses,
+            courses.find(course => course.course_code === deletedRow.course)!
+         ];
+         setAvailableCourses(updatedAvailableCourses);
 
-      if (selectedCourse === deletedRow.course) {
+         if (selectedCourse === deletedRow.course) {
+            setSelectedCourse('');
+            setSelectedCourseId(null);
+            setCreditLoad('');
+         }
+
+         setEditingRowIndex(null);
          setSelectedCourse('');
          setSelectedCourseId(null);
          setCreditLoad('');
       }
-
-      setEditingRowIndex(null);
-      setSelectedCourse('');
-      setSelectedCourseId(null);
-      setCreditLoad('');
    };
 
    const IsCourseAndCreditLoadValid = () => {
@@ -235,6 +255,7 @@ const UpdateCourseAssignment = ({
          reset({
             course_category_id: String(selectedCategoryId ?? "")
          });
+         setToDeleteCourseCategory(selectedCategoryId)
       }
    }, [courseAssingnments, reset, selectedCategoryId]);
 
@@ -250,16 +271,13 @@ const UpdateCourseAssignment = ({
       }));
 
       data['assignments'] = payload;
-      setIsLoading(true);
       const { error, success }: any = await UpdateSingleCourseAssignment(courseAssingnments.id, token, data);
       if (error) {
          console.log('error', error)
-         setIsLoading(false);
          notify({ message: 'Course assignment could not be completed! Try again.', variant: "error", timeout: 5000 });
          return;
       }
       if (success) {
-         setIsLoading(false);
          notify({ message: 'Courses has been assigned Successful.', variant: "success", timeout: 5000 })
          router.push(`${basePath}`)
             router.refresh();
@@ -289,7 +307,7 @@ const UpdateCourseAssignment = ({
                   </TableHeader>
                   <TableBody>
                      {Array.isArray(rows) && rows.map((row, index) => (
-                        <TableRow key={index}>
+                        <TableRow key={index+row.course}>
                            <TableCell>{row.course}</TableCell>
                            <TableCell>{row.credit_load}</TableCell>
                            <TableCell className='flex flex-1 gap-5 text-lg'>
@@ -304,7 +322,7 @@ const UpdateCourseAssignment = ({
                            <select value={selectedCourse} onChange={handleCourseChange}>
                               <option value="">Select Course</option>
                               {availableCourses && availableCourses.map((course) => (
-                                 <option key={course.id} data-id={course.id} value={course.course_code}>{course.course_code}</option>
+                                 <option key={course.id+course.course_code} data-id={course.id} value={course.course_code}>{course.course_code}</option>
                               ))}
                            </select>
                            {assignmentErrors.course && <div className="text-red-500">{assignmentErrors.course}</div>}
@@ -331,12 +349,18 @@ const UpdateCourseAssignment = ({
             </div>
             
             <div className="flex justify-center w-full">
-               <Button type='submit'>
-                  Save Course Assignment
-                  {
-                     (isLoading)
-                     ? (<Loader2 className="animate-spin" />)
-                     : (<ArrowRightIcon className="ml-2 h-5 w-5" />)                     
+               <Button
+                  type='submit'
+                  disabled={!isValid || isSubmitting}
+               >
+                  {isSubmitting
+                     ? (
+                        <>
+                           <span>{"Saving data "}</span>
+                           <Loader2 fontSize={20} size={40} className="animate-spin text-lg" />
+                        </>
+                     )
+                     : <span>{"Save Course Assignment"}</span>
                   }
                </Button>
             </div>

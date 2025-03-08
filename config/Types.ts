@@ -22,6 +22,8 @@ type Grade = {
   value: string;
 };
 
+type Program2 = Array<string>;
+
 type Program = {
   id: number;
   label: string;
@@ -125,6 +127,7 @@ type Course = {
 
 type CourseCategory = {
   id: string;
+  program: string;
   faculty_id: string;
   department_id: string;
   level: string;

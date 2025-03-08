@@ -1,6 +1,14 @@
 import { remoteApiUrl } from "@/config";
 import { apiCallerBeta } from "@/lib/utils/apiCaller";
 
+export async function GetAllActiveFaculties() {
+  const response = (await apiCallerBeta({
+    url: `${remoteApiUrl}/faculties/active`,
+    method: "GET",
+  })) as any;
+  response.revalidate = 60;
+  return response;
+}
 export async function GetAllActiveFacultiesWithDepartments() {
   const response = (await apiCallerBeta({
     url: `${remoteApiUrl}/active-faculties/depts`,
@@ -9,6 +17,7 @@ export async function GetAllActiveFacultiesWithDepartments() {
   response.revalidate = 60;
   return response;
 }
+
 const fetchFacultyAndDepartments = async () => {
   let facDept: any[] = [];
   const { error, success }: any = await GetListOfFaculties();
@@ -368,6 +377,21 @@ export async function GetAllCoursesInACategory(
 export async function DeleteSingleCourseAssignment(token: string, id: string) {
   const response = (await apiCallerBeta({
     url: `${remoteApiUrl}/admin/course-category/delete-course-category?course_category_id=${id}`,
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })) as any;
+  return response;
+}
+export async function DeleteSingleAssignment(
+  token: string,
+  courseCategoryId: number,
+  courseId: number,
+  creditLoad: number
+) {
+  const response = (await apiCallerBeta({
+    url: `${remoteApiUrl}/admin/course-assignment/delete?course_category_id=${courseCategoryId}&course_id=${courseId}&credite_load=${creditLoad}`,
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,

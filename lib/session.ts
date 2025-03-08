@@ -83,9 +83,7 @@ export async function getFullSession() {
 /**
  * Retrieves a specific session key.
  */
-export async function getSession<T = Record<string, any>>(
-  key: string
-) {
+export async function getSession<T = Record<string, any>>(key: string) {
   const allSession = await getFullSession();
   if (!allSession || !allSession[key]) {
     console.log(`${key} could not be found!`);
@@ -122,8 +120,8 @@ export async function setSession(
     httpOnly: true,
     secure: true,
     expires: expiresAt,
-    // sameSite: "lax",
-    sameSite: "none",
+    sameSite: "lax",
+    // sameSite: "none",
     // domain: ".yourdomain.com", // to maitain the data accross multile sites
     path: "/",
   });
@@ -169,147 +167,3 @@ export async function deleteSession() {
   cookieStore.delete("session");
   console.log("Session deleted successfully!");
 }
-
-// export async function createSession(key: string, value: any, duration: string) {
-//   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-//   const expiry = getExpiryDuration(duration);
-
-//   const session = await encrypt();
-//   const cookieStore = await cookies();
-
-//   cookieStore.set("session", session, {
-//     httpOnly: true,
-//     secure: true,
-//     expires: expiresAt,
-//     sameSite: "lax",
-//     path: "/",
-//   });
-// }
-
-// import "server-only";
-// import { JWTPayload, SignJWT, jwtVerify } from "jose";
-// import { cookies } from "next/headers";
-// import { encodedKey } from "@/config";
-// import { SessionData } from "@/types/auth";
-
-// function getExpiryDuration(duration: string) {
-//   const match = duration.match(/^(\d+)([smhd]?)$/);
-//   if (!match) throw new Error("Invalid duration format");
-
-//   const value = parseInt(match[1], 10);
-//   const unit = match[2];
-
-//   switch (unit) {
-//     case "s":
-//       return Math.floor(Date.now() / 1000) + value; // seconds
-//     case "m":
-//       return Math.floor(Date.now() / 1000) + value * 60; // minutes
-//     case "h":
-//       return Math.floor(Date.now() / 1000) + value * 3600; // hours
-//     case "d":
-//       return Math.floor(Date.now() / 1000) + value * 86400; // days
-//     default:
-//       return Math.floor(Date.now() / 1000) + value * 3600; // default to hours
-//   }
-// }
-
-// export async function encrypt(
-//   payload: JWTPayload | undefined,
-//   duration = "1h"
-// ) {
-//   const expiry = getExpiryDuration(duration);
-
-//   return new SignJWT(payload)
-//     .setProtectedHeader({ alg: "HS256" })
-//     .setIssuedAt()
-//     .setExpirationTime(expiry)
-//     .sign(encodedKey);
-// }
-
-// export async function decrypt(session: string | undefined = "") {
-//   if (session) {
-//     try {
-//       const { payload } = await jwtVerify(session, encodedKey, {
-//         algorithms: ["HS256"],
-//       });
-//       return payload;
-//     } catch (error: any) {
-//       console.log("Failed to verify session:", error.message);
-//     }
-//   } else {
-//     console.log("session is empty", session);
-//     return null;
-//   }
-// }
-
-// export async function getFullSession() {
-//   const sessionToken = cookies().get("session")?.value;
-//   if (!sessionToken) return null;
-
-//   return await decrypt(sessionToken);
-// }
-
-// export async function setSession(key: string, value: any, duration: string) {
-//   const fullSession = await getFullSession();
-//   console.log("SETTING SESSION:", key, value);
-
-//   const timeRange = getExpiryDuration(duration);
-//   const expiresAt = new Date(Date.now() + timeRange);
-//   const updatedSession = { ...fullSession, [key]: { ...value, expiresAt } };
-
-//   const sessionToken = await encrypt(
-//     { ...updatedSession, expiresAt: expiresAt.toISOString() },
-//     duration
-//   );
-//   cookies().set("session", sessionToken, {
-//     httpOnly: true,
-//     secure: true,
-//     expires: expiresAt,
-//     sameSite: "lax",
-//     path: "/",
-//   });
-// }
-
-// export async function getSession(key: string) {
-//   const fullSession = await getFullSession();
-//   if (!fullSession || !fullSession[key]) return null;
-
-//   const sessionData = fullSession[key] as SessionData;
-//   const expiresAt = sessionData.expiresAt;
-
-//   const currentTime = Date.now();
-//   if (expiresAt && expiresAt < currentTime) {
-//     await deleteSessionKey(key);
-//     return null;
-//   }
-
-//   // const session = cookies().get(sessionName)?.value;
-//   if (!sessionData) {
-//     await deleteSessionKey(key);
-//     return null;
-//   }
-//   return sessionData;
-// }
-
-// export async function deleteSessionKey(key: string): Promise<void> {
-//   const fullSession = await getFullSession();
-//   if (!fullSession || !fullSession[key]) return;
-
-//   delete fullSession[key];
-
-//   if (Object.keys(fullSession).length === 0) {
-//     cookies().delete("session");
-//   } else {
-//     const sessionToken = await encrypt(fullSession, "1h");
-//     cookies().set("session", sessionToken, {
-//       httpOnly: true,
-//       secure: process.env.NODE_ENV === "production",
-//       sameSite: "lax",
-//       path: "/",
-//     });
-//   }
-// }
-
-// export function deleteSession() {
-//   cookies().delete("session");
-// }

@@ -11,7 +11,7 @@ import { ArrowRightIcon, Loader2 } from "lucide-react";
 import { SelectFormField } from '@/components/ui/inputs/FormFields';
 import { Button } from '@/components/ui/button';
 
-const UpdateCourseCategory = ({ token, courseCategory, faculties, departments, studyLevels, semesters }: { token: string, courseCategory: CourseCategory, faculties: Faculty[], departments: Department[], studyLevels: StudyLevelsType[], semesters: SemestersType[] }) => {
+const UpdateCourseCategory = ({ token, courseCategory,  programs,faculties, departments, studyLevels, semesters }: { token: string, courseCategory: CourseCategory, programs: Program2[], faculties: Faculty[], departments: Department[], studyLevels: StudyLevelsType[], semesters: SemestersType[] }) => {
    const {
       handleSubmit,
       reset,
@@ -21,6 +21,7 @@ const UpdateCourseCategory = ({ token, courseCategory, faculties, departments, s
    } = useForm<CourseCategoryFormData>({
       resolver: zodResolver(UpdateCourseCategorySchema),
       defaultValues: {
+         program: String(courseCategory?.program ?? ""),  
          faculty_id: String(courseCategory?.faculty_id ?? ""),  
          department_id: String(courseCategory?.department_id ?? ""),
          level: String(courseCategory?.level ?? ""),
@@ -34,6 +35,7 @@ const UpdateCourseCategory = ({ token, courseCategory, faculties, departments, s
    useEffect(() => {
       if (courseCategory) {
          reset({
+            program: String(courseCategory?.program ?? ""),
             faculty_id: String(courseCategory?.faculty_id ?? ""),
             department_id: String(courseCategory?.department_id ?? ""),
             level: String(courseCategory?.level ?? ""),
@@ -84,10 +86,21 @@ const UpdateCourseCategory = ({ token, courseCategory, faculties, departments, s
 
    return (
       <form onSubmit={handleSubmit(onSubmit)}>
-         <div className="grid col-auto text-gray-700 space-y-5 mx-auto p-10 md:p-16 bg-gray-200 w-full sm:w-3/4 md:w-1/2 lg:w-2/3">
+         <div className="grid col-auto text-gray-700 space-y-2 mx-auto p-10 md:p-16 bg-gray-200 w-full sm:w-3/4 md:w-3/4 lg:w-2/3">
             <h1 className="text-3xl font-bold mb-4">
                <span className="text-orange-700 font-extralight inline-block">{courseCategory.short_code}</span>
             </h1>
+            <SelectFormField<CourseCategoryFormData>
+               name="program"
+               label="Program"
+               placeholder={"Select the Program"}
+               control={control}
+               error={errors.program}
+               options={Object.values(programs).map(program => ({
+                  value: String(program),
+                  label: String(program)
+               }))} // because programs is an enum
+            />
             <SelectFormField<CourseCategoryFormData>
                name="faculty_id"
                label="Faculty"
@@ -140,6 +153,7 @@ export default UpdateCourseCategory
 
 export const UpdateCourseCategorySchema: ZodType<CourseCategoryFormData> = z
    .object({
+      program: z.string().min(1, "Program is required"),
       faculty_id: z.string().min(1, "Faculty is required"),
       department_id: z.string().min(1, "Select Department"),
       level: z.string().min(1, "Select Study Level"),
@@ -149,6 +163,7 @@ export const UpdateCourseCategorySchema: ZodType<CourseCategoryFormData> = z
    })
 
 type CourseCategoryFormData = {
+   program: string,
    faculty_id: string,
    department_id: string,
    level: string,

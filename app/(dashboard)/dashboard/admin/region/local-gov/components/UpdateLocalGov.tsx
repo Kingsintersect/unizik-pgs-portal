@@ -54,7 +54,7 @@ const UpdateLocalGov = ({ token, localGov, states, }: { token: string, states: S
 
    return (
       <form onSubmit={handleSubmit(onSubmit)}>
-         <div className="grid col-auto text-gray-700 space-y-10 mx-auto p-10 md:p-16 bg-gray-200 w-full sm:w-3/4 md:w-1/2 lg:w-2/3">
+         <div className="grid col-auto text-gray-700 space-y-10 mx-auto p-10 md:p-16 bg-gray-200 w-full sm:w-3/4 md:w-3/4 lg:w-2/3">
             <h1 className="text-3xl font-bold mb-4">
                <span className="text-orange-700 font-extralight inline-block">{localGov.name}</span>
             </h1>

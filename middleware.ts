@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSession } from "@/lib/session";
+import { getFullSession, getSession } from "@/lib/session";
 import { Roles } from "./app/(dashboard)/dashboard/admin/users/users.types";
 import { SessionData } from "./types/auth";
 import { loginSessionKey } from "./lib/definitions";
@@ -18,7 +18,8 @@ export default async function middleware(req: NextRequest) {
   const isStudentRoute = path.startsWith(studentRoutePrefix);
   const isAdminRoute = path.startsWith(adminRoutePrefix);
 
-  const loginSession = (await getSession(loginSessionKey)) as SessionData;
+  // const loginSession = (await getSession(loginSessionKey)) as SessionData;
+  const loginSession = await getFullSession();
 
   // 5. Redirect to /login if the user is not authenticated
   if (isProtectedRoute && !loginSession?.id) {

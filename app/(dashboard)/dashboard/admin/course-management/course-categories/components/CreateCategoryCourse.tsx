@@ -11,7 +11,7 @@ import { ArrowRightIcon, Loader2 } from "lucide-react";
 import { Button } from '@/components/ui/button';
 import { SelectFormField } from '@/components/ui/inputs/FormFields';
 
-const CreateCourseCategory = ({ token, faculties, studyLevels, semesters }: { token: string, faculties: Faculty[], studyLevels: StudyLevelsType[], semesters: SemestersType[] }) => {
+const CreateCourseCategory = ({ token, programs, faculties, studyLevels, semesters }: { token: string, programs: Program2[], faculties: Faculty[], studyLevels: StudyLevelsType[], semesters: SemestersType[] }) => {
    const {
       register,
       handleSubmit,
@@ -40,6 +40,7 @@ const CreateCourseCategory = ({ token, faculties, studyLevels, semesters }: { to
          console.error("An unexpected error occurred:", error);
       }
    };
+   console.log("programs",programs);
 
    const onSubmit: SubmitHandler<CourseCategoryFormData> = async (data) => {
       setIsLoading(true);
@@ -61,10 +62,21 @@ const CreateCourseCategory = ({ token, faculties, studyLevels, semesters }: { to
 
    return (
       <form onSubmit={handleSubmit(onSubmit)}>
-         <div className="grid col-auto text-gray-700 space-y-4 mx-auto p-10 md:p-16 bg-gray-200 w-full sm:w-3/4 md:w-1/2 lg:w-2/3">
+         <div className="grid col-auto text-gray-700 space-y-2 mx-auto p-10 md:p-16 bg-gray-200 w-full sm:w-3/4 md:w-3/4 lg:w-2/3">
             <h1 className="text-3xl font-bold mb-4">
                Create <span className="text-orange-700 font-extralight inline-block">{"New Course Category"}</span>
             </h1>
+            <SelectFormField<CourseCategoryFormData>
+               name="program"
+               label="Program"
+               placeholder={"Select the Program"}
+               control={control}
+               error={errors.program}
+               options={Object.values(programs).map(program => ({
+                  value: String(program),
+                  label: String(program)
+               }))} // because programs is an enum
+            />
             <SelectFormField<CourseCategoryFormData>
                name="faculty_id"
                label="Faculty"
@@ -118,6 +130,7 @@ export default CreateCourseCategory
 
 export const CreateCourseCategorySchema: ZodType<CourseCategoryFormData> = z
    .object({
+      program: z.string().min(1, "Program is required"),
       faculty_id: z.string().min(1, "Faculty is required"),
       department_id: z.string().min(1, "Select Department"),
       level: z.string().min(1, "Select Study Level"),
@@ -127,6 +140,7 @@ export const CreateCourseCategorySchema: ZodType<CourseCategoryFormData> = z
    })
 
 type CourseCategoryFormData = {
+   program: string,
    faculty_id: string,
    department_id: string,
    level: string,

@@ -29,11 +29,11 @@ export const ADMIN_SIDENAV_ITEMS: SideNavItem[] = [
         title: "Department",
         path: "/dashboard/admin/course-management/department",
       },
-      { title: "Courses", path: "/dashboard/admin/course-management/courses" },
       {
         title: "Course Categories",
         path: "/dashboard/admin/course-management/course-categories",
       },
+      { title: "Courses", path: "/dashboard/admin/course-management/courses" },
       {
         title: "Courses Assignment",
         path: "/dashboard/admin/course-management/course-assignment",
@@ -79,12 +79,15 @@ export const gender = [
 ];
 
 export const StudyLevels = [
-  { label: "Level 100", value: "100" },
-  { label: "Level 200", value: "200" },
-  { label: "Level 300", value: "300" },
-  { label: "Level 400", value: "400" },
-  { label: "Level 500", value: "500" },
-  { label: "Level 600", value: "600" },
+  // { label: "Level 100", value: "100" },
+  // { label: "Level 200", value: "200" },
+  // { label: "Level 300", value: "300" },
+  // { label: "Level 400", value: "400" },
+  // { label: "Level 500", value: "500" },
+  // { label: "Level 600", value: "600" },
+  { label: "Level 700", value: "700" },
+  { label: "Level 800", value: "800" },
+  { label: "Level 900", value: "900" },
 ];
 
 export const Semesters = [

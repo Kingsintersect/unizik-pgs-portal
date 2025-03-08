@@ -51,10 +51,9 @@ const CreateCourseAssignment = ({
 }: CreateCourseAssignmentProps) => {
    const {
       handleSubmit,
-      formState: { errors },
+      formState: { errors, isValid, isSubmitting },
       control,
    } = useForm<CourseAssignmentFormData>({ resolver: zodResolver(CreateCourseAssignmentSchema), });
-   const [isLoading, setIsLoading] = useState<boolean>(false);
    const router = useRouter();
 
    const [selectedCourse, setSelectedCourse] = useState('');
@@ -229,16 +228,13 @@ const CreateCourseAssignment = ({
       }));
 
       data['assignments'] = payload;
-      setIsLoading(true);
       const { error, success }: any = await CreateNewCourseAssignment(token, data);
       if (error) {
          console.log('error', error)
-         setIsLoading(false);
          notify({ message: 'Course assignment could not be completed! Try again.', variant: "error", timeout: 5000 });
          return;
       }
       if (success) {
-         setIsLoading(false);
          notify({ message: 'Courses has been assigned Successful.', variant: "success", timeout: 5000 })
          router.push(`${basePath}`)
             router.refresh();
@@ -250,6 +246,7 @@ const CreateCourseAssignment = ({
          <form onSubmit={handleSubmit(onSubmit)} className='block space-y-10'>
             <SelectFormField<CourseAssignmentFormData>
                name="course_category_id"
+               label={"Course category"}
                placeholder={"Select the Course category"}
                control={control}
                options={courseCategory.map((cat: any) => ({ value: String(cat.id), label: cat.short_code }))}
@@ -268,7 +265,7 @@ const CreateCourseAssignment = ({
                   </TableHeader>
                   <TableBody>
                      {Array.isArray(rows) && rows.map((row, index) => (
-                        <TableRow key={index}>
+                        <TableRow key={index+row.course}>
                            <TableCell>{row.course}</TableCell>
                            <TableCell>{row.credit_load}</TableCell>
                            <TableCell className='flex flex-1 gap-5 text-lg'>
@@ -283,7 +280,7 @@ const CreateCourseAssignment = ({
                            <select value={selectedCourse} onChange={handleCourseChange}>
                               <option value="">Select Course</option>
                               {availableCourses && availableCourses.map((course) => (
-                                 <option key={course.id} data-id={course.id} value={course.course_code}>{course.course_code}</option>
+                                 <option key={course.id+course.course_code} data-id={course.id} value={course.course_code}>{course.course_code}</option>
                               ))}
                            </select>
                            {assignmentErrors.course && <div className="text-red-500">{assignmentErrors.course}</div>}
@@ -309,12 +306,18 @@ const CreateCourseAssignment = ({
                </Table>
             </div>
             <div className="flex justify-center w-full">
-               <Button type='submit'>
-                  Save New Course Assignment
-                  {
-                     (isLoading)
-                     ? (<Loader2 className="animate-spin" />)
-                     : (<ArrowRightIcon className="ml-2 h-5 w-5" />)                     
+               <Button
+                  type='submit'
+                  disabled={!isValid || isSubmitting}
+               >
+                  {isSubmitting
+                     ? (
+                        <>
+                           <span>{"Saving data "}</span>
+                           <Loader2 fontSize={20} size={40} className="animate-spin text-lg" />
+                        </>
+                     )
+                     : <span>{"Save New Course Assignment"}</span>
                   }
                </Button>
             </div>

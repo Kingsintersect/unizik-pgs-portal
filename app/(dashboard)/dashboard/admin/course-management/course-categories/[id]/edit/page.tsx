@@ -5,6 +5,7 @@ import { verifySession } from '@/lib/server.utils';
 import React from 'react'
 import { BreadcrumbResponsive } from '@/components/Breadcrumb';
 import { loginSessionKey } from '@/lib/definitions';
+import { GetAllProgram } from '@/app/actions/faculty.api';
 
 export const dynamic = "force-dynamic";
 
@@ -12,8 +13,9 @@ const page = async ({ params }: { params: { id: string } }) => {
    const id = params.id;
    const session = await verifySession(loginSessionKey);
 
-   const [courseCategory, faculty, departments]: any = await Promise.all([
+   const [courseCategory, program, faculty, departments]: any = await Promise.all([
       GetSingleCourseCategory(id, session.token),
+      GetAllProgram(),
       GetListOfFaculties(),
       GetListOfDepartments(),
    ]);
@@ -50,6 +52,7 @@ const page = async ({ params }: { params: { id: string } }) => {
                studyLevels={studyLevels}
                semesters={semesters}
                token={session.token}
+               programs={program.success.data ?? []}
             />
          </div>
       </main>
