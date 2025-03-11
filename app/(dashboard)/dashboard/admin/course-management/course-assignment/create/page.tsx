@@ -40,7 +40,7 @@ const page = async () => {
             {/* {breadcrumbItems && <BreadcrumbResponsive items={breadcrumbItems} itemsToDisplay={3} />} */}
          </div>
          <div className="w-full bg-white shadow-lg rounded-md px-7 py-20">
-            <CreateCourseAssignment basePath={basePath} courses={courses.success.data} courseCategory={courseCategory.success.data} token={session.token} />
+            <CreateCourseAssignment basePath={basePath} courses={courses.success.data ?? []} courseCategory={courseCategory.success.data?? []} token={session.token} />
          </div>
       </main>
    )

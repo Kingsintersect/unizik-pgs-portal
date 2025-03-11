@@ -277,7 +277,11 @@ const CreateCourseAssignment = ({
                      ))}
                      <TableRow>
                         <TableCell>
-                           <select value={selectedCourse} onChange={handleCourseChange}>
+                           <select
+                              className='border-0 px-4 py-2 rounded-sm bg-[#d454000d] font-bold'
+                              value={selectedCourse}
+                              onChange={handleCourseChange}
+                           >
                               <option value="">Select Course</option>
                               {availableCourses && availableCourses.map((course) => (
                                  <option key={course.id+course.course_code} data-id={course.id} value={course.course_code}>{course.course_code}</option>
@@ -291,6 +295,7 @@ const CreateCourseAssignment = ({
                               value={credit_load}
                               onChange={handleCreditLoadChange}
                               placeholder="Enter Credit Load"
+                              className='border-0 px-4 py-2 rounded-sm'
                            />
                            {assignmentErrors.credit_load && <div className="text-red-500">{assignmentErrors.credit_load}</div>}
                         </TableCell>

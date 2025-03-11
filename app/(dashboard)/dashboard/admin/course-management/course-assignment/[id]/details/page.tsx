@@ -5,6 +5,7 @@ import React from 'react';
 import UpdateCourseAssignment from '../../components/UpdateCourseAssignment';
 import { BreadcrumbResponsive } from '@/components/Breadcrumb';
 import { loginSessionKey } from '@/lib/definitions';
+import NotFound from '../not-found';
 
 export const dynamic = "force-dynamic";
     
@@ -20,10 +21,15 @@ const page = async ({ params }: { params: { id: string } }) => {
    ]);
 
    const breadcrumbItems = [
-      { href: "'/dashboard/admin'", label: "Dashboard" },
+      { href: "/dashboard/admin", label: "Dashboard" },
       { href: "/dashboard/admin/course-management/course-assignment", label: "Course Assignments" },
       { href: `/dashboard/admin/course-management/course-assignment/${id}/edit`, label: "Edit Course Assignment" },
    ];
+
+   if (!courseAssingnments.success) {
+      return <NotFound />
+   }
+
    return (
       <main className='space-y-10'>
          <div className="p-6">

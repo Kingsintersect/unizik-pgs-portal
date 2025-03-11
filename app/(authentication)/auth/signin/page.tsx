@@ -12,6 +12,7 @@ import { AdminLoginFormData, AdminLoginSchema } from '../auth.types';
 import { cn } from '@/lib/utils';
 import { Roles } from '@/app/(dashboard)/dashboard/admin/users/users.types';
 import { useUser } from '@/contexts/UserContext';
+import Link from 'next/link';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -62,7 +63,25 @@ export default function LoginPage() {
                     error={errors.password}
                 />
             </div>
-
+            <div className="w-full flex item-center justify-between my-2 py-2">
+                <div className="text-orange-500">
+                    <div className="flex items-center mb-4 gap-1">
+                        <input
+                            id={"remember"}
+                            type="checkbox"
+                            className={cn("peer/checkbox1 w-5 h-5 border-2 border-gray-300 focus:ring-0 dark:bg-gray-700 dark:border-gray-600")}
+                        />
+                        <label
+                        htmlFor={`remember`}
+                        className={cn("peer-checked/checkbox1:text-orange-400 peer-checked/checkbox1:font-bold block ms-2 font-normal text-gray-900 dark:text-gray-300")}
+                        >
+                            Remember me
+                        </label>
+                    </div>
+                    
+                </div>
+                <Link href={"/auth/forgot-password"} className="text-orange-500">Forgot password?</Link>
+            </div>
             <button
                 type="submit"
                 disabled={!isValid}
@@ -71,5 +90,6 @@ export default function LoginPage() {
                 {isSubmitting ? "Processing..." : " Sign in"}
             </button>
         </form>
+        
     );
 }

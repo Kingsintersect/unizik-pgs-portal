@@ -21,32 +21,52 @@ export async function EnrollTutorToCourse(
   return response;
 }
 
+export async function FetchAllCourseEnrolledByTutor(token: string) {
+  const response = (await apiCallerBeta({
+    url: `${remoteApiUrl}/admin/course-assignment/tutor/all`,
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })) as any;
+  console.log("response", response);
+  return response;
+}
+
 // src/lib/api.ts
 export const fetchPrograms = async () => {
   return [
-    { label: "Masters", value: "masters" },
-    { label: "PhD", value: "phd" },
-    { label: "PGD", value: "pgd" },
+    { label: "MASTERS", value: "MASTERS" },
+    { label: "PHD", value: "PHD" },
+    { label: "PGDE", value: "PGDE" },
   ];
 };
 
 export const fetchFaculties = async (program: string) => {
   const { error, success } = await GetAllActiveFaculties();
-  if (success.data) return success.data;
+  if (success) return success.data;
   if (error) console.error("Fetch Faculty Error!", error);
   return [];
 };
 
 export const fetchDepartments = async (facultyId: string) => {
   const { error, success } = await GetAllDepartmentInAFaculty(facultyId);
-  if (success.data) return success.data;
+  if (success) return success.data;
   if (error) console.error("Fetch Department Error!", error);
   return [];
 };
 
-export const fetchCourses = async (programe: string, departmentId: string) => {
-  const { error, success } = await GetCoursesInAProgram(programe, departmentId);
-  if (success.data) return success.data;
+export const fetchCourses = async (
+  token: string,
+  programe: string,
+  departmentId: string
+) => {
+  const { error, success } = await GetCoursesInAProgram(
+    token,
+    programe,
+    departmentId
+  );
+  if (success) return success.data;
   if (error) console.error("Fetch Department Error!", error);
   return [];
 };
