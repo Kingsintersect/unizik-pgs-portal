@@ -36,10 +36,8 @@ const Layout: NextPage<LayoutProps> = ({ children }: LayoutProps) => {
                               </h1>
                               <p className="text-lg text-[#d35401]">Please sign-in to your account for more adventure</p>
                            </div>
-                           
                            {children}
-
-                           <div className="w-full mt-10">
+                           <div className="w-full text-start mt-10">
                               New on our platform? 
                               <Link href={"/auth/signup"} className="text-orange-500 font-semibold"> Create an account</Link>
                            </div>

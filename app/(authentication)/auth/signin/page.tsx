@@ -73,7 +73,7 @@ export default function LoginPage() {
                         />
                         <label
                         htmlFor={`remember`}
-                        className={cn("peer-checked/checkbox1:text-orange-400 peer-checked/checkbox1:font-bold block ms-2 font-normal text-gray-900 dark:text-gray-300")}
+                        className={cn("peer-checked/checkbox1:text-orange-400 peer-checked/checkbox1:font-bold block ms-2 font-normal text-gray-900 dark:text-gray-300 cursor-pointer")}
                         >
                             Remember me
                         </label>

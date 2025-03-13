@@ -1,25 +1,16 @@
-import { z, ZodType } from "zod";
+import { z } from "zod";
 
-export type SignupFormData = {
-    first_name: string,
-    last_name: string,
-    other_name?: string,
-    phone_number: string,
-    nationality: string,
-    state: string,
-    email: string,
-    password: string,
-    password_confirmation: string,
-    faculty_id: number,
-    department_id: number,
-};
-export const SignupSchema: ZodType<SignupFormData> = z
+export const SignupSchema = z
   .object({
     first_name: z.string().min(1, { message: "First name cannot be empty" }),
     last_name: z.string().min(1, { message: "Last  name is required" }),
-    other_name: z.string().optional(),
-    phone_number: z.string().min(1, { message: "Phone number is required" }),
-    nationality: z
+    username: z.string().min(1, { message: "Username is required" }),
+    phone: z.string().min(1, { message: "Phone number is required" }),
+    gender: z.string().refine((value) => value !== "", {
+      message: "Your gender must be selected",
+    }),
+    dob: z.string().min(1, { message: "Choose your date of birth" }),
+    country: z
       .string()
       .refine((value) => value !== "", { message: "Country must be selected" }),
     state: z
@@ -34,11 +25,15 @@ export const SignupSchema: ZodType<SignupFormData> = z
     faculty_id: z.coerce.number({
       message: "Faculty Id must be a valid number",
     }),
-    department_id: z.coerce.number({
-      message: "Department Id must be a valid number",
-    }),
+    // department_id: z.coerce.number({
+    //   message: "Department Id must be a valid number",
+    // }),
+    department_id: z.string().min(1, { message: "Department is required" }),
+    program: z.string().min(1, { message: "Programme is required" }),
   })
   .refine((data) => data.password === data.password_confirmation, {
     message: "Passwords do not match",
     path: ["password_confirmation"],
-});
+  });
+
+export type SignupFormData = z.infer<typeof SignupSchema>;

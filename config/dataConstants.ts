@@ -73,7 +73,7 @@ export const CreditLoads: CreditLoad[] = [
   { id: "5", score: "5" },
 ];
 
-export const gender = [
+export const Gender = [
   { label: "Male", value: "male" },
   { label: "Female", value: "female" },
 ];

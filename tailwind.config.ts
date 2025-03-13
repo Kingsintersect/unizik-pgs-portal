@@ -88,6 +88,6 @@ const config: Config = {
     "top-4",
     "right-5",
   ],
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/forms")],
 };
 export default config;

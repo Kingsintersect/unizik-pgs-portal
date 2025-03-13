@@ -29,10 +29,10 @@ export type ValidFieldNamesType<T> = Path<T>;
 // export type ValidFieldNames = ValidFieldNamesType<FormData>; // Generates valid field names
 
 
-export const FormFieldSet = ({ legend, classList, children }: { legend: string, classList: string, children: ReactNode }) => {
+export const FormFieldSet = ({ legend, classList, children }: { legend?: string, classList?: string, children: ReactNode }) => {
    return (
       <fieldset className={cn(`w-full border border-solid border-gray-300 rounded-md px-4 py-7`, classList)}>
-         <legend className="text-2xl text-orange-400">{legend}</legend>
+         {legend && <legend className="text-2xl text-orange-400">{legend}</legend>}
          {children}
       </fieldset>
    )
