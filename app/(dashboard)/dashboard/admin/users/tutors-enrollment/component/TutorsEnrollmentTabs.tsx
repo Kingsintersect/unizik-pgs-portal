@@ -163,7 +163,7 @@ const TutorEnrollmentTabs: React.FC<TutorEnrollmentProps> = ({ userId }) => {
         }
         return 0;
     });
-    const [reviewData, setReviewData] = useState({});
+    // const [reviewData, setReviewData] = useState({});
     const [programs, setPrograms] = useState<ProgramOption[]>([]);
     const [faculties, setFaculties] = useState<ProgramOption[]>([]);
     const [departments, setDepartments] = useState<ProgramOption[]>([]);
@@ -212,7 +212,6 @@ const TutorEnrollmentTabs: React.FC<TutorEnrollmentProps> = ({ userId }) => {
     useEffect(() => {
         localStorage.setItem(STEP_STORAGE_KEY, activeTab.toString());
     }, [activeTab]);
-
 
     useEffect(() => {
         fetchPrograms().then((data) => {

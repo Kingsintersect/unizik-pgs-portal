@@ -13,13 +13,11 @@ import { SelectFormField } from '@/components/ui/inputs/FormFields';
 
 const CreateCourseCategory = ({ token, programs, faculties, studyLevels, semesters }: { token: string, programs: Program2[], faculties: Faculty[], studyLevels: StudyLevelsType[], semesters: SemestersType[] }) => {
    const {
-      register,
       handleSubmit,
-      formState: { errors },
-      setError,
+      formState: { errors, isSubmitting },
+      setValue,
       control,
    } = useForm<CourseCategoryFormData>({ resolver: zodResolver(CreateCourseCategorySchema), });
-   const [isLoading, setIsLoading] = useState<boolean>(false);
    const [depatments, setDepatments] = useState<any[]>([]);
    const router = useRouter();
 
@@ -40,25 +38,25 @@ const CreateCourseCategory = ({ token, programs, faculties, studyLevels, semeste
          console.error("An unexpected error occurred:", error);
       }
    };
-   console.log("programs",programs);
+
+   const handleProgrammeChange = (program: string) => {
+      const programLevel = studyLevels.find(level => level.program === program);
+      setValue("level", programLevel?.value || "");
+   }
 
    const onSubmit: SubmitHandler<CourseCategoryFormData> = async (data) => {
-      setIsLoading(true);
       const { error, success }: any = await CreateNewCourseCategory(token, data);
       if (error) {
          console.log('error', error)
-         setIsLoading(false);
          notify({ message: 'Failed to create course! Try again.', variant: "error", timeout: 5000 });
          return;
       }
       if (success) {
-         setIsLoading(false);
          notify({ message: 'Course created Successful.', variant: "success", timeout: 5000 })
          router.push(`${baseUrl}/dashboard/admin/course-management/course-categories`)
             router.refresh();
       }
    }
-
 
    return (
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -76,6 +74,7 @@ const CreateCourseCategory = ({ token, programs, faculties, studyLevels, semeste
                   value: String(program),
                   label: String(program)
                }))} // because programs is an enum
+               onValueSelect={handleProgrammeChange}
             />
             <SelectFormField<CourseCategoryFormData>
                name="faculty_id"
@@ -94,14 +93,14 @@ const CreateCourseCategory = ({ token, programs, faculties, studyLevels, semeste
                error={errors.department_id}
                options={depatments.map(item => ({ value: String(item.id), label: item.department_name }))}
             />
-            <SelectFormField<CourseCategoryFormData>
+            {/* <SelectFormField<CourseCategoryFormData>
                name="level"
                label="Level "
                placeholder={"Select level"}
                control={control}
                error={errors.level}
                options={studyLevels.map(item => ({ value: String(item.value), label: item.value }))}
-            />
+            /> */}
             <SelectFormField<CourseCategoryFormData>
                name="semester"
                label="Semester"
@@ -115,7 +114,7 @@ const CreateCourseCategory = ({ token, programs, faculties, studyLevels, semeste
                <Button type='submit'>
                   Save New Course
                   {
-                     (isLoading)
+                     (isSubmitting)
                      ? (<Loader2 className="animate-spin" />)
                      : (<ArrowRightIcon className="ml-2 h-5 w-5" />)                     
                   }

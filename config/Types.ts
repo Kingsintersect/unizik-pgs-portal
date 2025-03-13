@@ -152,6 +152,7 @@ type CreditLoad = {
 type StudyLevelsType = {
   label: string;
   value: string;
+  program: string;
 };
 type SemestersType = {
   label: string;

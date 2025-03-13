@@ -85,9 +85,9 @@ export const StudyLevels = [
   // { label: "Level 400", value: "400" },
   // { label: "Level 500", value: "500" },
   // { label: "Level 600", value: "600" },
-  { label: "Level 700", value: "700" },
-  { label: "Level 800", value: "800" },
-  { label: "Level 900", value: "900" },
+  { label: "Level 700", value: "700", program: "MAS" },
+  { label: "Level 800", value: "800", program: "PHD" },
+  { label: "Level 900", value: "900", program: "PGDE" },
 ];
 
 export const Semesters = [
