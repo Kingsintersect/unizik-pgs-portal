@@ -13,7 +13,7 @@ import useToken from "@/hook/useToken";
 import { baseUrl } from "@/config";
 import { EnrollTutorToCourse, fetchCourses,fetchDepartments, fetchFaculties, fetchPrograms } from "@/app/actions/tutorEnrollment.api";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import TutorourseEnrollmentList from "./TutorourseEnrollmentList";
+import TutorCourseEnrollmentList from "./TutorCurseEnrollmentList";
 
 // Styled Components
 const TabsContainer = styled.div`
@@ -306,201 +306,205 @@ const TutorEnrollmentTabs: React.FC<TutorEnrollmentProps> = ({ userId }) => {
 
     return (
         <div className="space-y-7">
-            <div>
-                <TutorourseEnrollmentList tutorId={userId} />
-            </div>
-            <form
-                onSubmit={handleSubmit(onSubmit)}
-                onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}        
-            >
-                <TabsContainer>
-                    <TabList>
-                        {tabs.map((tab, index) => (
-                            <Tab
-                                key={index}
-                                $active={activeTab === index}
-                                $disabled={index > activeTab}
-                                onClick={() => index <= activeTab && setActiveTab(index)}
-                            >
-                                <TabBullet $active={activeTab === index}/>
-                                {tab.title}
-                            </Tab>
-                        ))}
-                    </TabList>
-
-                    <TabContent>
-                        {activeTab === tabs.length - 1 ? (
-                            <Table className="w-full text-sm">
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead className="font-medium p-1">Field</TableHead>
-                                        <TableHead className="p-1">Selection</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    <TableRow>
-                                        <TableCell className="font-medium p-1">Program</TableCell>
-                                        <TableCell className="p-1">{selectedProgram || "Not selected"}</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell className="font-medium p-1">Faculty</TableCell>
-                                        <TableCell className="p-1">
-                                            {faculties.find((item) => item.value === selectedFaculty)?.label || "Not selected"}
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell className="font-medium p-1">Department</TableCell>
-                                        <TableCell className="p-1">
-                                            {departments.find((item) => item.value === selectedDepartment)?.label || "Not selected"}
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell className="font-medium p-1">Course</TableCell>
-                                        <TableCell className="p-1">
-                                            {selectedCourse ? (
-                                                courses
-                                                    .flatMap((courseGroup: any) => courseGroup.course)
-                                                    .find((course: any) => course.course_id == selectedCourse)?.course_title || "Not found"
-                                            ) : "Not selected"}
-                                        </TableCell>
-                                    </TableRow>
-                                </TableBody>
-                            </Table>
-                        ) : (
-                            <>
-                                {(!atCourseStep)?
-                                    (<Controller
-                                        name={tabs[activeTab].field as FormField}
-                                        control={control}
-                                        render={({ field }) => (
-                                        <FormGroup>
-                                            <Label>{tabs[activeTab].title}</Label>
-                                                <Select
-                                                    {...field}
-                                                >
-                                                <option value="">Select {tabs[activeTab].title}</option>
-                                                {tabs[activeTab]?.options?.map(({ value, label }) => (
-                                                    <option key={value} value={value}>{label}</option>
-                                                ))}
-                                            </Select>
-                                        </FormGroup>
-                                    )} />)
-                                :
-                                    (<div className="space-y-6">
-                                        {/* First Semester Courses */}
-                                        {(firstSemesterCourses.length > 0) && <fieldset className="space-y-2">
-                                            <Label className="font-bold text-lg">First Semester Courses</Label>
-                                            <Controller
-                                                name="course_id"
-                                                control={control}
-                                                render={({ field }) => (
-                                                    <RadioGroup
-                                                        onValueChange={(value) => {
-                                                            field.onChange(value);
-                                                            setSelectedSemester("1SM");
-                                                        }}
-                                                        value={field.value} // Ensure controlled component
-                                                        className="flex flex-col space-y-2"
-                                                    >
-                                                        {firstSemesterCourses.map((course) => (
-                                                            <div key={course.course_id} className="flex items-center space-x-3">
-                                                                <RadioGroupItem
-                                                                    value={course.course_id.toString()}
-                                                                    id={`course-${course.course_id}`}
-                                                                />
-                                                                <Label
-                                                                    htmlFor={`course-${course.course_id}`}
-                                                                    className="cursor-pointer"
-                                                                >
-                                                                    {course.course_code} - {course.course_title}
-                                                                </Label>
-                                                            </div>
-                                                        ))}
-                                                    </RadioGroup>
-                                                )}
-                                            />
-                                        </fieldset>}
-
-                                        {/* Second Semester Courses */}
-                                        {(secondSemesterCourses.length > 0) && <fieldset className="space-y-2">
-                                            <Label className="font-bold text-lg">Second Semester Courses</Label>
-                                            <Controller
-                                                name="course_id"
-                                                control={control}
-                                                render={({ field }) => (
-                                                    <RadioGroup
-                                                        onValueChange={(value) => {
-                                                            field.onChange(value);
-                                                            setSelectedSemester("2SM");
-                                                        }}
-                                                        value={field.value} // Ensure controlled component
-                                                        className="flex flex-col space-y-2"
-                                                    >
-                                                        {secondSemesterCourses.map((course) => (
-                                                            <div key={course.course_id} className="flex items-center space-x-3">
-                                                                <RadioGroupItem
-                                                                    value={course.course_id.toString()}
-                                                                    id={`course-${course.course_id}`}
-                                                                />
-                                                                <Label
-                                                                    htmlFor={`course-${course.course_id}`}
-                                                                    className="cursor-pointer"
-                                                                >
-                                                                    {course.course_code} - {course.course_title}
-                                                                </Label>
-                                                            </div>
-                                                        ))}
-                                                    </RadioGroup>
-                                                )}
-                                            />
-                                        </fieldset>}
-                                    </div>)
-                                }
-                                {errors[tabs[activeTab].field as FormField] && (
-                                    <p className="text-red-500">{errors[tabs[activeTab].field as FormField]?.message}</p>
-                                )}
-                            </>
-                        )}
-
-                        <div className="flex items-center justify-around">
-                            {activeTab > 0 && (
-                                <FlatButton type="button" onClick={handlePrev}>
-                                    Previous
-                                </FlatButton>
-                            )}
-                            {activeTab < tabs.length - 1 ? (
-                                <Button 
-                                    type="button" 
-                                    onClick={(e) => { 
-                                        e.preventDefault(); 
-                                        handleNext(); 
-                                    }}
-                                    disabled={!watch(tabs[activeTab].field as FormField)}
+            <div className="bg-white p-10 py-10 rounded-md shadow-md">
+                <div className="flex flex-col max-w-[800px] mx-auto text-right ">
+                    <h1 className="text-orange-600 text-4xl font-bold">Enroll To Course</h1>
+                    <div className="text-gray-700 text-lg">Choose option complete your enrollment</div>
+                    <hr className="mt-5" />
+                </div>
+                <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}        
+                >
+                    <TabsContainer>
+                        <TabList>
+                            {tabs.map((tab, index) => (
+                                <Tab
+                                    key={index}
+                                    $active={activeTab === index}
+                                    $disabled={index > activeTab}
+                                    onClick={() => index <= activeTab && setActiveTab(index)}
                                 >
-                                    Next
-                                </Button>
+                                    <TabBullet $active={activeTab === index}/>
+                                    {tab.title}
+                                </Tab>
+                            ))}
+                        </TabList>
 
+                        <TabContent>
+                            {activeTab === tabs.length - 1 ? (
+                                <Table className="w-full text-sm">
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="font-medium p-1">Field</TableHead>
+                                            <TableHead className="p-1">Selection</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell className="font-medium p-1">Program</TableCell>
+                                            <TableCell className="p-1">{selectedProgram || "Not selected"}</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell className="font-medium p-1">Faculty</TableCell>
+                                            <TableCell className="p-1">
+                                                {faculties.find((item) => item.value === selectedFaculty)?.label || "Not selected"}
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell className="font-medium p-1">Department</TableCell>
+                                            <TableCell className="p-1">
+                                                {departments.find((item) => item.value === selectedDepartment)?.label || "Not selected"}
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell className="font-medium p-1">Course</TableCell>
+                                            <TableCell className="p-1">
+                                                {selectedCourse ? (
+                                                    courses
+                                                        .flatMap((courseGroup: any) => courseGroup.course)
+                                                        .find((course: any) => course.course_id == selectedCourse)?.course_title || "Not found"
+                                                ) : "Not selected"}
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
                             ) : (
-                                <Button 
-                                    type="submit"
-                                    className="flex items-center justify-center gap-3"
-                                >
-                                    {
-                                        (isSubmitting)
-                                        ? (
-                                            <>
-                                                {"Enrolling"}
-                                                <Loader2 className="animate-spin" />
-                                            </>
-                                        )
-                                        : ("Enroll To Course")                     
+                                <>
+                                    {(!atCourseStep)?
+                                        (<Controller
+                                            name={tabs[activeTab].field as FormField}
+                                            control={control}
+                                            render={({ field }) => (
+                                            <FormGroup>
+                                                <Label>{tabs[activeTab].title}</Label>
+                                                    <Select
+                                                        {...field}
+                                                    >
+                                                    <option value="">Select {tabs[activeTab].title}</option>
+                                                    {tabs[activeTab]?.options?.map(({ value, label }) => (
+                                                        <option key={value} value={value}>{label}</option>
+                                                    ))}
+                                                </Select>
+                                            </FormGroup>
+                                        )} />)
+                                    :
+                                        (<div className="space-y-6">
+                                            {/* First Semester Courses */}
+                                            {(firstSemesterCourses.length > 0) && <fieldset className="space-y-2">
+                                                <Label className="font-bold text-lg">First Semester Courses</Label>
+                                                <Controller
+                                                    name="course_id"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <RadioGroup
+                                                            onValueChange={(value) => {
+                                                                field.onChange(value);
+                                                                setSelectedSemester("1SM");
+                                                            }}
+                                                            value={field.value} // Ensure controlled component
+                                                            className="flex flex-col space-y-2"
+                                                        >
+                                                            {firstSemesterCourses.map((course) => (
+                                                                <div key={course.course_id} className="flex items-center space-x-3">
+                                                                    <RadioGroupItem
+                                                                        value={course.course_id.toString()}
+                                                                        id={`course-${course.course_id}`}
+                                                                    />
+                                                                    <Label
+                                                                        htmlFor={`course-${course.course_id}`}
+                                                                        className="cursor-pointer"
+                                                                    >
+                                                                        {course.course_code} - {course.course_title}
+                                                                    </Label>
+                                                                </div>
+                                                            ))}
+                                                        </RadioGroup>
+                                                    )}
+                                                />
+                                            </fieldset>}
+
+                                            {/* Second Semester Courses */}
+                                            {(secondSemesterCourses.length > 0) && <fieldset className="space-y-2">
+                                                <Label className="font-bold text-lg">Second Semester Courses</Label>
+                                                <Controller
+                                                    name="course_id"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <RadioGroup
+                                                            onValueChange={(value) => {
+                                                                field.onChange(value);
+                                                                setSelectedSemester("2SM");
+                                                            }}
+                                                            value={field.value} // Ensure controlled component
+                                                            className="flex flex-col space-y-2"
+                                                        >
+                                                            {secondSemesterCourses.map((course) => (
+                                                                <div key={course.course_id} className="flex items-center space-x-3">
+                                                                    <RadioGroupItem
+                                                                        value={course.course_id.toString()}
+                                                                        id={`course-${course.course_id}`}
+                                                                    />
+                                                                    <Label
+                                                                        htmlFor={`course-${course.course_id}`}
+                                                                        className="cursor-pointer"
+                                                                    >
+                                                                        {course.course_code} - {course.course_title}
+                                                                    </Label>
+                                                                </div>
+                                                            ))}
+                                                        </RadioGroup>
+                                                    )}
+                                                />
+                                            </fieldset>}
+                                        </div>)
                                     }
-                                </Button>
+                                    {errors[tabs[activeTab].field as FormField] && (
+                                        <p className="text-red-500">{errors[tabs[activeTab].field as FormField]?.message}</p>
+                                    )}
+                                </>
                             )}
-                        </div>
-                    </TabContent>
-                </TabsContainer>
-            </form>
+
+                            <div className="flex items-center justify-around">
+                                {activeTab > 0 && (
+                                    <FlatButton type="button" onClick={handlePrev}>
+                                        Previous
+                                    </FlatButton>
+                                )}
+                                {activeTab < tabs.length - 1 ? (
+                                    <Button 
+                                        type="button" 
+                                        onClick={(e) => { 
+                                            e.preventDefault(); 
+                                            handleNext(); 
+                                        }}
+                                        disabled={!watch(tabs[activeTab].field as FormField)}
+                                    >
+                                        Next
+                                    </Button>
+
+                                ) : (
+                                    <Button 
+                                        type="submit"
+                                        className="flex items-center justify-center gap-3"
+                                    >
+                                        {
+                                            (isSubmitting)
+                                            ? (
+                                                <>
+                                                    {"Enrolling"}
+                                                    <Loader2 className="animate-spin" />
+                                                </>
+                                            )
+                                            : ("Enroll To Course")                     
+                                        }
+                                    </Button>
+                                )}
+                            </div>
+                        </TabContent>
+                    </TabsContainer>
+                </form>
+            </div> 
         </div>
     );
 };

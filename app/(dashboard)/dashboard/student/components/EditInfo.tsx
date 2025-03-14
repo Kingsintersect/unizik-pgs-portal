@@ -5,13 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
 interface StudentInfoProps {
-   student: { first_name: string; email: string; phone_number: string };
+   student: { first_name: string; email: string; phone: string };
 }
 
 const schema = z.object({
    first_name: z.string().min(2, "Name must be at least 2 characters"),
    email: z.string().email("Invalid email"),
-   phone_number: z.string().min(10, "Phone number must be at least 10 digits"),
+   phone: z.string().min(10, "Phone number must be at least 10 digits"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -50,11 +50,11 @@ const EditInfoForm = ({ student }: StudentInfoProps) => {
 
          <input
             type="tel"
-            {...register("phone_number")}
+            {...register("phone")}
             className="w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
             placeholder="Phone Number"
          />
-         <p className="text-red-500 text-sm">{errors.phone_number?.message}</p>
+         <p className="text-red-500 text-sm">{errors.phone?.message}</p>
 
          <button className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600">
             Save Changes

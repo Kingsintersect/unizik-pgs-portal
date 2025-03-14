@@ -21,15 +21,32 @@ export async function EnrollTutorToCourse(
   return response;
 }
 
-export async function FetchAllCourseEnrolledByTutor(token: string) {
+export async function FetchAllCourseEnrolledByTutor(
+  token: string,
+  tutorId: string
+) {
   const response = (await apiCallerBeta({
-    url: `${remoteApiUrl}/admin/course-assignment/tutor/all`,
+    url: `${remoteApiUrl}/admin/course-assignment/tutor/${tutorId}`,
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })) as any;
-  console.log("response", response);
+  return response;
+}
+
+export async function DeleteSingleCourseEnrolledByTutor(
+  token: string,
+  tutorId: string,
+  enrollmentId: string
+) {
+  const response = (await apiCallerBeta({
+    url: `${remoteApiUrl}/admin/course-assignment/tutor/${tutorId}`,
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })) as any;
   return response;
 }
 

@@ -51,7 +51,7 @@ interface StudentType {
   department_id: string | null;
   nationality: string | null;
   state: string | null;
-  phone_number: string | null;
+  phone: string | null;
   email: string | null;
   password: string | null;
   reference: string | null;

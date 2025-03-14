@@ -7,12 +7,20 @@ import { SignupFormData, SignupSchema } from "./signup.types.";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GetAllActiveFacultiesWithDepartments } from "@/app/actions/server.admin";
 import { FormFieldSet, InputFormField, RadiobuttonFormField, SelectFormField } from '@/components/ui/inputs/FormFields';
-import { Gender, Nationality, Program, State } from "@/config";
+import { Gender, Nationality, State } from "@/config";
 import { Loader2 } from "lucide-react";
 import { notify } from "@/contexts/ToastProvider";
 import { Signup } from "@/app/actions/auth";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { GetAllProgram } from "@/app/actions/faculty.api";
+import { displayErrors, extractErrorMessages } from "@/lib/utils/errorsHandler";
+
+const programLabels: Record<string, string> = {
+  MAS: "Masters Degree",
+  PHD: "Doctorate Degree",
+  PGDE: "Post Graduate Diploma",
+};
 
 const steps = [
     {
@@ -35,6 +43,7 @@ const steps = [
 export default function SignupPage() {
     const [currentStep, setCurrentStep] = useState(1);
     const [departmentFaculty, setDepartmentFaculty] = useState<any[]>([]);
+    const [programme, setprogramme] = useState<any[]>([]);
     const router = useRouter();
     const {
         register,
@@ -84,10 +93,18 @@ export default function SignupPage() {
     }
 
     const onSubmit: SubmitHandler<SignupFormData> = async (data: any) => {
-        console.log("Form Submitted", data);
         const { error, success } = await Signup(data);
+        // if (error) {
+        //     notify({ message: 'Application Fialed. Pleae Try Again', variant: "error", timeout: 5000 });
+        //     console.log("Error", error);
+        //     return;
+        // }
         if (error) {
-            notify({ message: 'Application Fialed. Pleae Try Again', variant: "error", timeout: 5000 });
+            const errorMessages = extractErrorMessages(error);
+            errorMessages.forEach((msg) => {
+                notify({ message: msg, variant: "error", timeout: 5000 });
+            });
+            return;
         }
         if (success) {
             notify({ message: 'Successfully Created Account', variant: "success", timeout: 5000 });
@@ -97,10 +114,31 @@ export default function SignupPage() {
         }
     };
 
+    useEffect(() => {
+        const fetchPrograms = async () => {
+            try {
+                const res = await GetAllProgram();
+                if (res?.success && res.success.data) {
+                    const program: Program[] = Object.entries(res.success.data).map(([id, value]) => ({
+                        id: Number(id),
+                        label: programLabels[String(value)] || "Unknown Program", // Ensure value is a string
+                        value: String(value),
+                    }));
+                    setprogramme(program);
+                }
+            } catch (error) {
+                console.error("Error fetching programs:", error);
+            }
+        };
+
+        fetchPrograms();
+    }, []);
+
+
     return (
         <div className="block w-full space-y-1 text-left">
             <Stepper steps={steps} currentStep={currentStep} />
-
+            
             <form onSubmit={handleSubmit(onSubmit)} className={`block max-h-[450px] overflow-y-scroll pr-5`}>
                 <FormFieldSet classList={`bg-white border-0 py-2 ${
                     currentStep == 1 ? "block" : "hidden"
@@ -173,7 +211,7 @@ export default function SignupPage() {
                         label={"Select Programme of Study"}
                         control={control}
                         error={errors.program}
-                        options={Program}
+                        options={programme}
                     />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">

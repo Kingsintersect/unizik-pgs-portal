@@ -11,9 +11,6 @@ const StudentProfile = () => {
    const {user, isLoading} = useUser();
 
    const student = {
-      name: "John Doe",
-      email: "john.doe@example.com",
-      phone: "+123456789",
       avatar: "/avatar-placeholder.png",
    };
 
@@ -36,7 +33,7 @@ const StudentProfile = () => {
             {/* Main Content */}
             <main className="lg:w-2/3 bg-white shadow-md p-6 rounded-xl">
                <h3 className="text-lg font-semibold mb-4">Profile Information</h3>
-                  <EditInfoForm student={{ first_name: user.first_name as string, email:user.email as string, phone_number:user.phone_number as string}} />
+                  <EditInfoForm student={{ first_name: user.first_name as string, email:user.email as string, phone:user.phone as string}} />
             </main>
 
             {/* Password Change Modal */}

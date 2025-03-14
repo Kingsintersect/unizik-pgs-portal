@@ -231,15 +231,20 @@ export const grades: Grade[] = [
 ];
 export const Program: Program[] = [
   { id: 1, label: "Post Graduste Diploma", value: "PGD" },
-  { id: 1, label: "Masters Degree", value: "MASTERS" },
-  { id: 1, label: "Doctorate Degree", value: "PHD" },
-  { id: 1, label: "Professional Dregree", value: "PROFESSOR" },
+  { id: 2, label: "Masters Degree", value: "MASTERS" },
+  { id: 3, label: "Doctorate Degree", value: "PHD" },
+  { id: 4, label: "Professional Dregree", value: "PROFESSOR" },
   // { id: 1, label: "Ordinary Level", value: "O'Level" },
   // { id: 2, label: "Advaced Level", value: "A'Level" },
   // { id: 3, label: "Ordiary National Diplomer", value: "OND" },
   // { id: 4, label: "Higher National Diplomer", value: "HND" },
   // { id: 5, label: "Bachalor's of science", value: "Bsc" },
 ];
+const programLabels: Record<string, string> = {
+  MAS: "Masters Degree",
+  PHD: "Doctorate Degree",
+  PGDE: "Post Graduate Diploma",
+};
 
 export const Nationality: any[] = [
   { id: 1, label: "Nigerian", value: "Nigeria" },
