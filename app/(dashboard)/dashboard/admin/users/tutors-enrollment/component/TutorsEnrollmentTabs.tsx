@@ -262,20 +262,24 @@ const TutorEnrollmentTabs: React.FC<TutorEnrollmentProps> = ({ userId }) => {
         { title: "Course", field: "course_id", options: courses },
         { title: "Review & Submit", field: "review"},
     ];
+    const ValidateCourseStep = () => {
+        if (tabs[activeTab].field === "department_id") {
+            setAtCourseStep(true);
+        }else setAtCourseStep(false);
+    }
 
     const handleNext = () => {
         if (activeTab < tabs.length - 1) {
             setActiveTab(activeTab + 1);
         }
-        if (tabs[activeTab].field === "department_id") {
-            setAtCourseStep(true);
-        }else setAtCourseStep(false);
+        ValidateCourseStep();
     };
 
     const handlePrev = () => {
         if (activeTab > 0) {
             setActiveTab(activeTab - 1);
         }
+        if(atCourseStep) ValidateCourseStep();
     };
 
     const onSubmit = async (data: any) => {
@@ -460,6 +464,10 @@ const TutorEnrollmentTabs: React.FC<TutorEnrollmentProps> = ({ userId }) => {
                                                     )}
                                                 />
                                             </fieldset>}
+                                            {/* If Empty */}
+                                            {(firstSemesterCourses.length === 0 && secondSemesterCourses.length === 0 && atCourseStep) && (
+                                                <p className="text-red-500 text-lg text-center">No Course Found</p>
+                                            )}
                                         </div>)
                                     }
                                     {errors[tabs[activeTab].field as FormField] && (

@@ -45,9 +45,10 @@ const TutorCourseEnrollmentList= ({ tutorId }: { tutorId: string }) => {
                 return;
             }
             setdeleting(true);
-            const { success, error } = await DeleteSingleCourseEnrolledByTutor(token, tutorId, enrollmentId);
+            const { success, error } = await DeleteSingleCourseEnrolledByTutor(token, enrollmentId, tutorId);
             if (success) {
                 notify({ message: "Course Enrolled Deleted Successfully", variant: "success", timeout: 5000 });
+                setCourses([]);
                 fetchData(token, tutorId);
             }
             if (error) {

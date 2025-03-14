@@ -37,11 +37,11 @@ export async function FetchAllCourseEnrolledByTutor(
 
 export async function DeleteSingleCourseEnrolledByTutor(
   token: string,
-  tutorId: string,
-  enrollmentId: string
+  enrollmentId: string,
+  tutorId?: string
 ) {
   const response = (await apiCallerBeta({
-    url: `${remoteApiUrl}/admin/course-assignment/tutor/${tutorId}`,
+    url: `${remoteApiUrl}/admin/course-assignment/tutor/${enrollmentId}`,
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
