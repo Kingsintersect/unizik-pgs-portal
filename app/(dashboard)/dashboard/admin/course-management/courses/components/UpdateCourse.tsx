@@ -10,6 +10,7 @@ import { z, ZodType } from 'zod';
 import { ArrowRightIcon, Loader2 } from "lucide-react";
 import { InputFormField, TextareaFormField } from '@/components/ui/inputs/FormFields';
 import { Button } from '@/components/ui/button';
+import { extractErrorMessages } from '@/lib/utils/errorsHandler';
 
 const UpdateCourse = ({ token, course }: { token: string, course: Course }) => {
    const {
@@ -30,18 +31,24 @@ const UpdateCourse = ({ token, course }: { token: string, course: Course }) => {
 
    const onSubmit = async (data: CourseFormData) => {
       setIsLoading(true);
-      const { error, success }: any = await UpdateSingleCourse(course.id, token, data);
-      if (error) {
-         console.error('error', error)
+      try {
+         const { error, success }: any = await UpdateSingleCourse(course.id, token, data);
+         if (error) {
+            const errorMessages = extractErrorMessages(error);
+            errorMessages.forEach((msg) => {
+               notify({ message: msg, variant: "error", timeout: 10000 });
+            });
+            return;
+         }
+         if (success) {
+            notify({ message: 'Course created Successful.', variant: "success", timeout: 5000 })
+            router.push(`${baseUrl}/dashboard/admin/course-management/courses`)
+               router.refresh();
+         }
+      } catch (error) {
+         console.error("An unexpected error occurred:", error);
+      } finally {
          setIsLoading(false);
-         notify({ message: 'Failed to create course! Try again.', variant: "error", timeout: 5000 });
-         return;
-      }
-      if (success) {
-         setIsLoading(false);
-         notify({ message: 'Course created Successful.', variant: "success", timeout: 5000 })
-         router.push(`${baseUrl}/dashboard/admin/course-management/courses`)
-            router.refresh();
       }
    }
 

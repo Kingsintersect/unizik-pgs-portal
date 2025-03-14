@@ -10,6 +10,7 @@ import { baseUrl } from '@/config';
 import { useRouter } from 'next/navigation';
 import { InputFormField } from '@/components/ui/inputs/FormFields';
 import { Button } from '@/components/ui/button';
+import { extractErrorMessages } from '@/lib/utils/errorsHandler';
 
 const UpdateFaculty = ({ faculty, token }: { faculty: Faculty, token: string }) => {
    const {
@@ -30,18 +31,24 @@ const UpdateFaculty = ({ faculty, token }: { faculty: Faculty, token: string }) 
 
    const onSubmit: SubmitHandler<UpdateFacultyFormData> = async (data) => {
       setIsLoading(true);
-      const { error, success }: any = await UpdateSingleFaculty(faculty.id, token, data);
-      if (error) {
-         console.log('error', error)
-         setIsLoading(false);
-         notify({ message: 'Update Data Failed Try again.', variant: "error", timeout: 5000 });
-         return;
-      }
-      if (success) {
-         setIsLoading(false);
-         notify({ message: 'Update Data Successful.', variant: "success", timeout: 5000 })
-         router.push(`${baseUrl}/dashboard/admin/course-management/faculty`)
+      try {
+         const { error, success }: any = await UpdateSingleFaculty(faculty.id, token, data);
+         if (error) {
+            const errorMessages = extractErrorMessages(error);
+            errorMessages.forEach((msg) => {
+               notify({ message: msg, variant: "error", timeout: 10000 });
+            });
+            return;
+         }
+         if (success) {
+            notify({ message: 'Update Data Successful.', variant: "success", timeout: 5000 })
+            router.push(`${baseUrl}/dashboard/admin/course-management/faculty`)
             router.refresh();
+         }
+      } catch (error) {
+         console.error("An unexpected error occurred:", error);
+      } finally {
+         setIsLoading(false);
       }
    }
 

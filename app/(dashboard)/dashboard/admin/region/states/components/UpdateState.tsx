@@ -10,6 +10,7 @@ import { baseUrl } from '@/config';
 import { useRouter } from 'next/navigation';
 import { InputFormField, SelectFormField } from '@/components/ui/inputs/FormFields';
 import { Button } from '@/components/ui/button';
+import { extractErrorMessages } from '@/lib/utils/errorsHandler';
 
 
 const UpdateState = ({ token, state, }: { token: string, state: State, }) => {
@@ -31,8 +32,10 @@ const UpdateState = ({ token, state, }: { token: string, state: State, }) => {
    const onSubmit: SubmitHandler<StateFormData> = async (data) => {
       const { error, success }: any = await UpdateSingleState(state.id, token, data);
       if (error) {
-         console.log('error', error)
-         notify({ message: 'state Update Failed Try again.', variant: "error", timeout: 5000 });
+         const errorMessages = extractErrorMessages(error);
+         errorMessages.forEach((msg) => {
+            notify({ message: msg, variant: "error", timeout: 10000 });
+         });
          return;
       }
       if (success) {

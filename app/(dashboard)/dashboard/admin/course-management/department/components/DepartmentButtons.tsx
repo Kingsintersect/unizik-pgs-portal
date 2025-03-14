@@ -5,21 +5,28 @@ import { notify } from "@/contexts/ToastProvider";
 import { TrashIcon } from "lucide-react";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
+import { extractErrorMessages } from "@/lib/utils/errorsHandler";
 
 export const DeleteDepartment = ({ token, id }: { token: string, id: string }) => {
    const router = useRouter();
 
    const handleDepartmentDelete = async (id: string) => {
-      const { error, success }: any = await DeleteSingleDepartment(token, id);
-      if (error) {
-         console.log('error', error)
-         notify({ message: 'Failed To Delete Data Try again.', variant: "error", timeout: 5000 });
-         return;
-      }
-      if (success) {
-         notify({ message: 'Deleted Successfully.', variant: "success", timeout: 5000 });
-         router.refresh();
-         hardReload();
+      try {
+         const { error, success }: any = await DeleteSingleDepartment(token, id);
+         if (error) {
+            const errorMessages = extractErrorMessages(error);
+            errorMessages.forEach((msg) => {
+               notify({ message: msg, variant: "error", timeout: 10000 });
+            });
+            return;
+         }
+         if (success) {
+            notify({ message: 'Deleted Successfully.', variant: "success", timeout: 5000 });
+            router.refresh();
+            hardReload();
+         }
+      } catch (error) {
+         console.error("Error fetching courses:", error);
       }
    }
    const hardReload = () => {

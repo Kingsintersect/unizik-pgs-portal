@@ -10,6 +10,7 @@ import { baseUrl } from '@/config';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { InputFormField } from '@/components/ui/inputs/FormFields';
+import { extractErrorMessages } from '@/lib/utils/errorsHandler';
 
 const UpdateCountry = ({ country, token }: { country: Country, token: string }) => {
    const {
@@ -30,18 +31,24 @@ const UpdateCountry = ({ country, token }: { country: Country, token: string }) 
 
    const onSubmit: SubmitHandler<UpdateCountryFormData> = async (data) => {
       setIsLoading(true);
-      const { error, success }: any = await UpdateSingleCountry(token, data);
-      if (error) {
-         console.log('error', error)
+      try {
+         const { error, success }: any = await UpdateSingleCountry(token, data);
+         if (error) {
+            const errorMessages = extractErrorMessages(error);
+            errorMessages.forEach((msg) => {
+               notify({ message: msg, variant: "error", timeout: 10000 });
+            });
+            return;
+         }
+         if (success) {
+            notify({ message: 'Update Data Successful.', variant: "success", timeout: 5000 })
+            router.push(`${baseUrl}/dashboard/admin/region/countries`)
+               router.refresh();
+         }
+      } catch (error) {
+         console.error("An unexpected error occurred:", error);
+      }finally {
          setIsLoading(false);
-         notify({ message: 'Update Data Failed Try again.', variant: "error", timeout: 5000 });
-         return;
-      }
-      if (success) {
-         setIsLoading(false);
-         notify({ message: 'Update Data Successful.', variant: "success", timeout: 5000 })
-         router.push(`${baseUrl}/dashboard/admin/region/countries`)
-            router.refresh();
       }
    }
 

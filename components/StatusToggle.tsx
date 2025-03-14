@@ -6,6 +6,7 @@ import useToken from "@/hook/useToken";
 import { useSession } from "@/hook/useSession";
 import { notify } from "@/contexts/ToastProvider";
 import { Loader2 } from "lucide-react";
+import { extractErrorMessages } from "@/lib/utils/errorsHandler";
 
 interface StatusToggleProps {
     id: string;
@@ -23,14 +24,17 @@ export const StatusToggle: React.FC<StatusToggleProps> = ({ id, status, method }
 
         if (token) {
             try {
-                const response = await method(id, token, { status: newStatus }); // Update in DB
-                const { error, success } = response;
+                const{ error, success } = await method(id, token, { status: newStatus }); // Update in DB
                 if (success) {
-        setIsChecked(!isChecked);
+                    setIsChecked(!isChecked);
                     notify({ message: 'Status Updated!', variant: "success", timeout: 5000 })
                 }
                 if (error) {
-                    notify({ message: 'Status Updated Faild!', variant: "error", timeout: 5000 })
+                    const errorMessages = extractErrorMessages(error);
+                    errorMessages.forEach((msg) => {
+                        notify({ message: msg, variant: "error", timeout: 10000 });
+                    });
+                    return;
                 }
             } catch (error) {
                 console.error("Error updating status:", error);

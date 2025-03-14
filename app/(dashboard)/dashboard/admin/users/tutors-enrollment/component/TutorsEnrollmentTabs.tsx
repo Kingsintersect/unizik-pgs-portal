@@ -14,6 +14,7 @@ import { baseUrl } from "@/config";
 import { EnrollTutorToCourse, fetchCourses,fetchDepartments, fetchFaculties, fetchPrograms } from "@/app/actions/tutorEnrollment.api";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import TutorCourseEnrollmentList from "./TutorCurseEnrollmentList";
+import { extractErrorMessages } from "@/lib/utils/errorsHandler";
 
 // Styled Components
 const TabsContainer = styled.div`
@@ -286,10 +287,12 @@ const TutorEnrollmentTabs: React.FC<TutorEnrollmentProps> = ({ userId }) => {
         if (token){
             const { error, success }: any = await EnrollTutorToCourse(token, assignment);
             if (error) {
-                notify({ message: 'Tutor Could Not Be Enrolled', variant: "error", timeout: 5000 });
-                console.log('error', error)
+                const errorMessages = extractErrorMessages(error);
+                errorMessages.forEach((msg) => {
+                    notify({ message: msg, variant: "error", timeout: 10000 });
+                });
                 return;
-            }
+                }
             if (success) {
                 notify({ message: 'Tutor Successfully Enrolled', variant: "success", timeout: 5000 })
                 localStorage.removeItem(LOCAL_STORAGE_KEY);

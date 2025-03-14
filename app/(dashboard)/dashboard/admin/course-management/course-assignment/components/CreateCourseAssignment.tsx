@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { extractErrorMessages } from '@/lib/utils/errorsHandler';
 
 interface Row {
    course: string;
@@ -230,9 +231,11 @@ const CreateCourseAssignment = ({
       data['assignments'] = payload;
       const { error, success }: any = await CreateNewCourseAssignment(token, data);
       if (error) {
-         console.log('error', error)
-         notify({ message: 'Course assignment could not be completed! Try again.', variant: "error", timeout: 5000 });
-         return;
+            const errorMessages = extractErrorMessages(error);
+            errorMessages.forEach((msg) => {
+               notify({ message: msg, variant: "error", timeout: 10000 });
+            });
+            return;
       }
       if (success) {
          notify({ message: 'Courses has been assigned Successful.', variant: "success", timeout: 5000 })

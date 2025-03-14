@@ -53,7 +53,7 @@ const TutorCourseEnrollmentList= ({ tutorId }: { tutorId: string }) => {
             if (error) {
                 const errorMessages = extractErrorMessages(error);
                 errorMessages.forEach((msg) => {
-                    notify({ message: msg, variant: "error", timeout: 5000 });
+                    notify({ message: msg, variant: "error", timeout: 10000 });
                 });
                 return;
             }
@@ -103,7 +103,7 @@ const TutorCourseEnrollmentList= ({ tutorId }: { tutorId: string }) => {
                                             className="flex items-center border border-red-500 text-red-500 px-2 py-1 rounded-md"
                                             onClick={() => handleCourseEnrollementDelete(item.enrolment_id)}
                                         >                                            
-                                            Delete
+                                            Drop
                                             {
                                                 (deleting)
                                                 ? (<Loader2 className="animate-spin" />)

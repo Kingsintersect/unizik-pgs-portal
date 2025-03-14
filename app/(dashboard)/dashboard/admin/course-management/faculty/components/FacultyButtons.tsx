@@ -5,6 +5,7 @@ import { notify } from "@/contexts/ToastProvider";
 import { TrashIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { extractErrorMessages } from "@/lib/utils/errorsHandler";
 
 export const DeleteFaculty = ({ token, id }: { token: string, id: string }) => {
    const router = useRouter();
@@ -12,8 +13,10 @@ export const DeleteFaculty = ({ token, id }: { token: string, id: string }) => {
    const handleFacultyDelete = async (id: string) => {
       const { error, success }: any = await DeleteSingleFaculty(token, id);
       if (error) {
-         console.log('error', error)
-         notify({ message: 'Failed To Delete Data Try again.', variant: "error", timeout: 5000 });
+         const errorMessages = extractErrorMessages(error);
+         errorMessages.forEach((msg) => {
+            notify({ message: msg, variant: "error", timeout: 10000 });
+         });
          return;
       }
       if (success) {

@@ -10,6 +10,7 @@ import { z, ZodType } from 'zod';
 import { ArrowRightIcon, Loader2 } from "lucide-react";
 import { Button } from '@/components/ui/button';
 import { SelectFormField } from '@/components/ui/inputs/FormFields';
+import { extractErrorMessages } from '@/lib/utils/errorsHandler';
 
 const CreateCourseCategory = ({ token, programs, faculties, studyLevels, semesters }: { token: string, programs: Program2[], faculties: Faculty[], studyLevels: StudyLevelsType[], semesters: SemestersType[] }) => {
    const {
@@ -47,8 +48,10 @@ const CreateCourseCategory = ({ token, programs, faculties, studyLevels, semeste
    const onSubmit: SubmitHandler<CourseCategoryFormData> = async (data) => {
       const { error, success }: any = await CreateNewCourseCategory(token, data);
       if (error) {
-         console.log('error', error)
-         notify({ message: 'Failed to create course! Try again.', variant: "error", timeout: 5000 });
+         const errorMessages = extractErrorMessages(error);
+         errorMessages.forEach((msg) => {
+            notify({ message: msg, variant: "error", timeout: 10000 });
+         });
          return;
       }
       if (success) {

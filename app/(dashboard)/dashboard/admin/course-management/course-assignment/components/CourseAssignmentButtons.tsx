@@ -3,6 +3,7 @@
 import { DeleteSingleCourseAssignment } from "@/app/actions/server.admin";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { notify } from "@/contexts/ToastProvider";
+import { extractErrorMessages } from "@/lib/utils/errorsHandler";
 import { TrashIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -12,8 +13,10 @@ export const DeleteCourseAssignment = ({ token, id }: { token: string, id: strin
    const handleCourseDelete = async (id: string) => {
       const { error, success }: any = await DeleteSingleCourseAssignment(token, id);
       if (error) {
-         console.log('error', error)
-         notify({ message: 'Failed To Delete Data Try again.', variant: "error", timeout: 5000 });
+         const errorMessages = extractErrorMessages(error);
+         errorMessages.forEach((msg) => {
+            notify({ message: msg, variant: "error", timeout: 10000 });
+         });
          return;
       }
       if (success) {

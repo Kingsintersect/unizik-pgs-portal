@@ -11,6 +11,7 @@ import { baseUrl, State } from '@/config';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { InputFormField, SelectFormField } from '@/components/ui/inputs/FormFields';
+import { extractErrorMessages } from '@/lib/utils/errorsHandler';
 
 const UpdateLocalGov = ({ token, localGov, states, }: { token: string, states: State[], localGov: LocalGov }) => {
    const {
@@ -41,8 +42,10 @@ const UpdateLocalGov = ({ token, localGov, states, }: { token: string, states: S
    const onSubmit: SubmitHandler<UpdateLocalGovFormData> = async (data) => {
       const { error, success }: any = await UpdateSingleLocalGov(localGov.id, token, data);
       if (error) {
-         console.log('error', error)
-         notify({ message: 'state Update Failed Try again.', variant: "error", timeout: 5000 });
+         const errorMessages = extractErrorMessages(error);
+         errorMessages.forEach((msg) => {
+            notify({ message: msg, variant: "error", timeout: 10000 });
+         });
          return;
       }
       if (success) {

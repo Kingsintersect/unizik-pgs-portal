@@ -16,6 +16,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UpdateUserRoleFormData, UpdateUserRoleSchema, UserRoles } from '../../users.types';
 import Spinner from "@/components/ui/application/Spinner";
+import { extractErrorMessages } from "@/lib/utils/errorsHandler";
 
 const AssignRole = ({ params }: { params: { id: string } }) => {
    const router = useRouter();
@@ -42,8 +43,10 @@ const AssignRole = ({ params }: { params: { id: string } }) => {
             return;
          }
          if (error) {
-            console.log('error', error.message)
-            notify({ message: 'Something went wrong!', variant: "error", timeout: 5000 });
+            const errorMessages = extractErrorMessages(error);
+            errorMessages.forEach((msg) => {
+               notify({ message: msg, variant: "error", timeout: 10000 });
+            });
             return;
          }
       }
@@ -64,19 +67,23 @@ const AssignRole = ({ params }: { params: { id: string } }) => {
    const onSubmit: SubmitHandler<UpdateUserRoleFormData> = async (data) => {
       console.log('user', data)
       setIsLoading(true);
-      const { error, success }: any = await UpdateUserRole(token ?? "",params.id, data);
-      if (error) {
-         console.log('error', error)
-         setIsLoading(false);
-         notify({ message: 'state Update Failed Try again.', variant: "error", timeout: 5000 });
-         return;
-      }
-      if (success) {
-         setIsLoading(false);
-         notify({ message: 'State Update Data Successful.', variant: "success", timeout: 5000 })
-         setRole(data.role);
-         // router.push(`${baseUrl}/dashboard/admin/users`)
-         //    router.refresh();
+      try {
+         const { error, success }: any = await UpdateUserRole(token ?? "",params.id, data);
+         if (error) {
+            const errorMessages = extractErrorMessages(error);
+            errorMessages.forEach((msg) => {
+               notify({ message: msg, variant: "error", timeout: 10000 });
+            });
+            return;
+         }
+         if (success) {
+            notify({ message: 'State Update Data Successful.', variant: "success", timeout: 5000 })
+            setRole(data.role);
+         }
+      } catch (error) {
+         console.error("An unexpected error occurred:", error);
+      } finally {
+         setIsLoading(false)
       }
    }
 

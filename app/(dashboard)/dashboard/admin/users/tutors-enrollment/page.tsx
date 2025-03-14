@@ -30,12 +30,12 @@ const TutorsEnrollmentPage = () => {
 			if (token) {
 				const { success, error } = await FetchAllTeachers(token)
 				if (success) {
-				const descendingData = [...success.data].sort((a, b) => b.id - a.id);
-				setUserData(descendingData);
-				return
+					const descendingData = [...success.data].sort((a, b) => b.id - a.id);
+					setUserData(descendingData);
+					return
 				}
 				if (error) {
-				console.error('Error Fetching tutors Data: ', error.message);
+					console.error('Error Fetching tutors Data: ', error.message);
 				}
 			}
 		}

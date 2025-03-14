@@ -10,6 +10,7 @@ import { baseUrl } from '@/config';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { InputFormField, SelectFormField } from '@/components/ui/inputs/FormFields';
+import { extractErrorMessages } from '@/lib/utils/errorsHandler';
 
 const CreateLocalGov = ({ token, states }: { token: string, states: State[] }) => {
    const {
@@ -24,18 +25,24 @@ const CreateLocalGov = ({ token, states }: { token: string, states: State[] }) =
 
    const onSubmit: SubmitHandler<CreateLocalGovFormData> = async (data) => {
       setIsLoading(true);
-      const { error, success }: any = await CreateNewLocalGov(token, data);
-      if (error) {
-         console.log('error', error)
+      try {
+         const { error, success }: any = await CreateNewLocalGov(token, data);
+         if (error) {
+            const errorMessages = extractErrorMessages(error);
+            errorMessages.forEach((msg) => {
+               notify({ message: msg, variant: "error", timeout: 10000 });
+            });
+            return;
+         }
+         if (success) {
+            notify({ message: 'Create Data Successful.', variant: "success", timeout: 5000 })
+            router.push(`${baseUrl}/dashboard/admin/region/local-gov`)
+               router.refresh();
+         }
+      } catch (error) {
+         console.error("An unexpected error occurred:", error);
+      }finally {
          setIsLoading(false);
-         notify({ message: 'Create Data Failed Try again.', variant: "error", timeout: 5000 });
-         return;
-      }
-      if (success) {
-         setIsLoading(false);
-         notify({ message: 'Create Data Successful.', variant: "success", timeout: 5000 })
-         router.push(`${baseUrl}/dashboard/admin/region/local-gov`)
-            router.refresh();
       }
    }
 

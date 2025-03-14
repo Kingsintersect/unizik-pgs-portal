@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { Roles } from '@/app/(dashboard)/dashboard/admin/users/users.types';
 import { useUser } from '@/contexts/UserContext';
 import Link from 'next/link';
+import { extractErrorMessages } from '@/lib/utils/errorsHandler';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -29,8 +30,10 @@ export default function LoginPage() {
 
         const { error, success } = await Signin(data);
         if (error) {
-            console.log('error', error)
-            notify({ message: 'Login Failed Try again.', variant: "error", timeout: 5000 });
+            const errorMessages = extractErrorMessages(error);
+            errorMessages.forEach((msg) => {
+                notify({ message: msg, variant: "error", timeout: 10000 });
+            });
             return;
         }
         if (success) {

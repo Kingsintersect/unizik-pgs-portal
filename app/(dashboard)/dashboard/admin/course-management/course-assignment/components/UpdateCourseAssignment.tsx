@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { extractErrorMessages } from '@/lib/utils/errorsHandler';
 
 interface Row {
    course: string;
@@ -187,7 +188,10 @@ const UpdateCourseAssignment = ({
       const { success, error } = await DeleteSingleAssignment(token, courseCategoryId, courseId, creditLoad);
       if (error) {
          console.error("Delete Row Error!", error)
-         notify({ message: 'Row data could not be deleted', variant: "error", timeout: 5000 });
+         const errorMessages = extractErrorMessages(error);
+         errorMessages.forEach((msg) => {
+            notify({ message: msg, variant: "error", timeout: 10000 });
+         });
          deleted = false;
       }
       if (success) {
@@ -273,8 +277,10 @@ const UpdateCourseAssignment = ({
       data['assignments'] = payload;
       const { error, success }: any = await UpdateSingleCourseAssignment(courseAssingnments.id, token, data);
       if (error) {
-         console.log('error', error)
-         notify({ message: 'Course assignment could not be completed! Try again.', variant: "error", timeout: 5000 });
+         const errorMessages = extractErrorMessages(error);
+         errorMessages.forEach((msg) => {
+            notify({ message: msg, variant: "error", timeout: 10000 });
+         });
          return;
       }
       if (success) {

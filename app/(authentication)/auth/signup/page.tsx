@@ -94,11 +94,6 @@ export default function SignupPage() {
 
     const onSubmit: SubmitHandler<SignupFormData> = async (data: any) => {
         const { error, success } = await Signup(data);
-        // if (error) {
-        //     notify({ message: 'Application Fialed. Pleae Try Again', variant: "error", timeout: 5000 });
-        //     console.log("Error", error);
-        //     return;
-        // }
         if (error) {
             const errorMessages = extractErrorMessages(error);
             errorMessages.forEach((msg) => {

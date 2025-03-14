@@ -10,6 +10,7 @@ import { baseUrl } from '@/config';
 import { useRouter } from 'next/navigation';
 import { InputFormField, SelectFormField } from '@/components/ui/inputs/FormFields';
 import { Button } from '@/components/ui/button';
+import { extractErrorMessages } from '@/lib/utils/errorsHandler';
 
 const CreateState = ({ token, country }: { token: string, country: Country[] }) => {
    const {
@@ -24,8 +25,10 @@ const CreateState = ({ token, country }: { token: string, country: Country[] }) 
    const onSubmit: SubmitHandler<CreateStateData> = async (data) => {
       const { error, success }: any = await CreateNewState(token, data);
       if (error) {
-         console.log('error', error)
-         notify({ message: 'Create Data Failed Try again.', variant: "error", timeout: 5000 });
+         const errorMessages = extractErrorMessages(error);
+         errorMessages.forEach((msg) => {
+            notify({ message: msg, variant: "error", timeout: 10000 });
+         });
          return;
       }
       if (success) {
