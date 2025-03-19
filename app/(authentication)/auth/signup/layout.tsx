@@ -29,7 +29,7 @@ import Link from 'next/link';
                            </div>
                         </div>
                         <div className="w-full sm:basis-3/3 md:basis-4/6 bg-white">
-                           <div className="flex flex-col items-center justify-center h-full px-7 sm:px-5 md:px-36">
+                           <div className="flex flex-col items-center justify-center h-full px-7 sm:px-10 md:px-20 lg:px-32">
                               <div className="w-full text-start mb-10 font-bold text-xl space-x-3 text-[#23628d]">
                                  <span>Have an account ?</span>
                                  <Link href={"/auth/signin"} className="text-orange-500 font-semibold"> Please signin</Link>

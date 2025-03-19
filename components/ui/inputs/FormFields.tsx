@@ -77,7 +77,10 @@ export const InputFormField = <T extends Record<string, any>>({
          className={`block py-2.5 px-0 w-full text-base text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:border-cyan-500 focus:outline-none focus:ring-0 peer ${ error ? "border-red-500" : ""}`}
       />
       {(type !== "hidden") &&
-         <label htmlFor={name} className={`peer-focus:font-medium absolute text-sm ${(error?.message)?"text-red-400":"ext-gray-500"} t  duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-cyan-600 peer-focus:dark:text-cyan-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6`}>{label}</label>
+         <label htmlFor={name} className={`peer-focus:font-medium absolute text-sm ${(error?.message) ? "text-red-400" : "text-gray-500"} duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-cyan-600 peer-focus:dark:text-cyan-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6`}>
+            {label}
+            {(error?.message) && ` * ${error?.message}` }
+         </label>
       }
       {/* {error && <span className="error-message text-red-400 text-xs">{error.message}</span>} */}
    </div>
@@ -122,7 +125,7 @@ export const RadiobuttonFormField = <T extends Record<string, any>>({
          />
          <label
             htmlFor={`option-${value}`}
-            className="peer-checked/checkbox1:text-orange-500 peer-checked/checkbox1:font-bold block ms-2 text-lg font-normal text-gray-900 dark:text-gray-300"
+            className={"peer-checked/checkbox1:text-orange-500 peer-checked/checkbox1:font-bold block ms-2 text-lg font-normal text-gray-900 dark:text-gray-300"}
          >
             {label}
          </label>
@@ -208,7 +211,10 @@ export const SelectFormField = <T extends Record<string, any>>({
 }: SelectFormFieldProps<T>) => {
    return (
       <div className="w-full">
-         {label && <label className="mb-2 block text-sm font-medium text-gray-700">{label}</label>}
+         {(label || error?.message) && <label className={`mb-2 block text-sm font-medium text-gray-700 ${(error?.message) ? "text-red-400" : "text-gray-500"}`}>
+            {label}
+            {(error?.message) && ` * ${error?.message}` }
+         </label>}
          <Controller
             name={name as any}
             control={control} 
@@ -243,7 +249,7 @@ export const SelectFormField = <T extends Record<string, any>>({
             )}
          />
          {description && <p className="text-sm text-gray-500 mt-1">{description}</p>}
-         {error && <p className="text-xs text-red-500 mt-1">{error.message}</p>}
+         {/* {error && <p className="text-xs text-red-500 mt-1">{error.message}</p>} */}
       </div>
    );
 };
@@ -278,7 +284,10 @@ export const TextareaFormField = <T extends Record<string, any>>({
 }: TextareaFieldProps<T>) => (
    <div>
       <div className="col-span-full">
-         <label htmlFor={name} className={`block text-sm font-medium leading-6 ${(error?.message)?"text-red-400":"text-gray-400"} `}>{name}</label>
+         <label htmlFor={name} className={`block text-sm font-medium leading-6 ${(error?.message) ? "text-red-400" : "text-gray-400"} `}>
+            {name}
+            {(error?.message) && ` * ${error?.message}` }
+         </label>
          <div className="mt-2">
             <textarea
                id={id}

@@ -1,144 +1,35 @@
 "use client";
-
-import { Key, useEffect, useMemo, useState } from "react";
 import Stepper from "@/components/Stepper";
-import { FieldName, SubmitHandler, useForm } from "react-hook-form";
-import { SignupFormData, SignupSchema } from "./signup.types.";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { GetAllActiveFacultiesWithDepartments } from "@/app/actions/server.admin";
 import { FormFieldSet, InputFormField, RadiobuttonFormField, SelectFormField } from '@/components/ui/inputs/FormFields';
-import { Gender, Nationality, State } from "@/config";
 import { Loader2, SaveAll } from "lucide-react";
-import { notify } from "@/contexts/ToastProvider";
-import { Signup } from "@/app/actions/auth";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { GetAllProgram } from "@/app/actions/faculty.api";
-import { displayErrors, extractErrorMessages } from "@/lib/utils/errorsHandler";
 import { motion } from "framer-motion";
+import useSignInMultiStepViewModel, { SignupSchema } from "@/hook/use-signin-multistep-view-model";
+import { z } from "zod";
+import { Key } from "react";
 
-const programLabels: Record<string, string> = {
-  MAS: "Masters Degree",
-  PHD: "Doctorate Degree",
-  PGDE: "Post Graduate Diploma",
-};
 
-const steps = [
-    {
-        id: 1,
-        label: "Personal Info",
-        fields: ["first_name", "last_name", "phone", "gender", "national", "state"],
-    },
-    {
-        id: 2,
-        label: "Account Credentials",
-        fields: ["program", "faculty_id", "department_id"],
-    },
-    {
-        id: 3,
-        label: "Application Data",
-        fields: ["email", "username", "password", "password_confirmation"],
-    },
-];
-    
+type SignupFormData = z.infer<typeof SignupSchema>;
 export default function SignupPage() {
-    const [currentStep, setCurrentStep] = useState(1);
-    const [previousStep, setPreviousStep] = useState(1);
-    const delta = currentStep - previousStep;
-    const getInitialX = () => (delta >= 1 ? "50%" : "-50%");
-    const [departmentFaculty, setDepartmentFaculty] = useState<any[]>([]);
-    const [programme, setprogramme] = useState<any[]>([]);
-    const router = useRouter();
     const {
+        currentStep,
+        nextStep,
+        prevStep,
+        NewGender,
+        NewNationality,
+        NewState,
         register,
         handleSubmit,
-        watch,
-        reset,
-        trigger,
+        onSubmit,
         control,
-        setValue,
-        formState: { errors, isSubmitting },
-    } = useForm<SignupFormData>({
-        resolver: zodResolver(SignupSchema),
-        mode: "onBlur",
-    });
-
-    const NewGender = useMemo(() => Gender, []);
-    const NewNationality = useMemo(() => Nationality, []);
-    const NewState = useMemo(() => State, []);
-
-
-    useEffect(() => {
-        const loadData = async () => {
-            const { error, success }: any = await GetAllActiveFacultiesWithDepartments();
-            if (success) setDepartmentFaculty(success.data);
-        };
-
-        loadData();
-    }, []);
-    
-    const handleDepartmentSelect = (faculityId: number, departmentId: number) => {
-        setValue("faculty_id", faculityId);
-    };
-
-    const nextStep = async () => {
-        const fields = steps[currentStep - 1].fields;
-        const isFieldsValid = await trigger(fields as FieldName<SignupFormData>[], { shouldFocus: true });
-
-        if (!isFieldsValid) return;
-        if (currentStep < steps.length) {
-            setPreviousStep(currentStep);
-            setCurrentStep((prev) => Math.min(prev + 1, steps.length));
-        }
-
-        if (currentStep === steps.length) {
-            await handleSubmit(onSubmit)(); 
-        }
-    }
-    const prevStep = () => {
-        if (currentStep > 1) {
-            setPreviousStep(currentStep);
-            setCurrentStep(step => Math.max(step - 1, 1));
-        }
-    }
-
-    const onSubmit: SubmitHandler<SignupFormData> = async (data: any) => {
-        const { error, success } = await Signup(data);
-        if (error) {
-            const errorMessages = extractErrorMessages(error);
-            errorMessages.forEach((msg) => {
-                notify({ message: msg, variant: "error", timeout: 5000 });
-            });
-            return;
-        }
-        if (success) {
-            notify({ message: 'Successfully Created Account', variant: "success", timeout: 5000 });
-            reset();
-            setCurrentStep(1);
-            router.push("/auth/signin");
-        }
-    };
-
-    useEffect(() => {
-        const fetchPrograms = async () => {
-            try {
-                const res = await GetAllProgram();
-                if (res?.success && res.success.data) {
-                    const program: Program[] = Object.entries(res.success.data).map(([id, value]) => ({
-                        id: Number(id),
-                        label: programLabels[String(value)] || "Unknown Program", // Ensure value is a string
-                        value: String(value),
-                    }));
-                    setprogramme(program);
-                }
-            } catch (error) {
-                console.error("Error fetching programs:", error);
-            }
-        };
-
-        fetchPrograms();
-    }, []);
-
+        errors,
+        isSubmitting,
+        departmentFaculty,
+        programme,
+        handleDepartmentSelect,
+        steps,
+        delta
+    } = useSignInMultiStepViewModel();
 
     return (
         <div className="block w-full space-y-1 text-left">
@@ -152,7 +43,7 @@ export default function SignupPage() {
                         transition={{ duration: 0.5, ease: "easeInOut" }}
                     >
                         <FormFieldSet classList={`bg-white border-0 py-2`} >
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 my-2 gap-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 my-4 gap-y-4">
                                 <InputFormField<SignupFormData>
                                     type="text"
                                     id={'first_name'}
@@ -170,7 +61,7 @@ export default function SignupPage() {
                                     error={errors.last_name}
                                 />
                                 <InputFormField<SignupFormData>
-                                    classList="col-span-full"
+                                    classList=""
                                     type="text"
                                     id={'phone'}
                                     label="Phone Number"
@@ -207,6 +98,22 @@ export default function SignupPage() {
                                     control={control}
                                     error={errors.state}
                                     options={NewState}
+                                />
+                                <InputFormField<SignupFormData>
+                                    type="text"
+                                    id={'hometown_address'}
+                                    label="Home Town Address"
+                                    name="hometown_address"
+                                    register={register}
+                                    error={errors.hometown_address}
+                                />
+                                <InputFormField<SignupFormData>
+                                    type="text"
+                                    id={'residential_address'}
+                                    label="Residential Address"
+                                    name="residential_address"
+                                    register={register}
+                                    error={errors.residential_address}
                                 />
                             </div>
                         </FormFieldSet>

@@ -25,6 +25,7 @@ const StudentDashboard = () => {
          <StudentBanner student={user} />
          <EnrolledCourseList
             url={lmsLink}
+            userId={user.id ?? ""}
             userStudyLevel={user.level ?? ''}
          />
       </div>

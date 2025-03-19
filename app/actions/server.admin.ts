@@ -359,13 +359,14 @@ export async function CreateNewCourseAssignment(
   return response;
 }
 
-export async function GetAllCoursesInACategory(
-  short_code: string,
-  token: string
+export async function GetStudentCourses(
+  token: string,
+  userId: string | number,
+  short_code: string
 ) {
   console.log("short_code", short_code);
   const response = (await apiCallerBeta({
-    url: `${remoteApiUrl}/course-enrolment/courses?level=${short_code}&semester=2SM`,
+    url: `${remoteApiUrl}/admin/course-assignment/student-courses?student_id=${userId}&level=${short_code}`,
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,

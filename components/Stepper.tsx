@@ -33,11 +33,11 @@ export default function Stepper({ steps, currentStep }: StepperProps) {
                             Step {step.id}
                         </span>
                         <span
-                            className={`text-base font-semibold ${
+                            className={`text-base font-bold ${
                                 currentStep === step.id
-                                ? "text-black"
+                                ? "text-[#efb5a2]"
                                 : currentStep > step.id
-                                ? "text-black"
+                                ? "text-[#efb5a2]"
                                 : "text-gray-400"
                             }`}
                             aria-current={currentStep === step.id ? "step" : undefined}
