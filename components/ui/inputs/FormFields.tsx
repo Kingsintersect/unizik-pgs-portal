@@ -1,10 +1,10 @@
 "use client";
 import {cn}from "@/lib/utils";
-import { ReactNode, useRef } from "react";
+import { ReactNode, useRef, useState } from "react";
 import Image from 'next/image';
 import { Control, Controller, FieldError, Path, useFormContext, UseFormRegister } from "react-hook-form";
-import { ImageIcon, Camera } from "lucide-react";
-import { Label } from "@/components/ui/label"
+import { Camera } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import Spinner from "../application/Spinner";
 import {
   Select,
@@ -66,25 +66,40 @@ export const InputFormField = <T extends Record<string, any>>({
    classList = "",
    validationRules = {},
    value,
-}: FormInputFieldProps<T>) => (
-   <div className={cn(`relative z-0 w-full`, classList)}>
-      <input
-         type={type}
-         id={id}
-         placeholder={""}
-         {...register(name, { ...validationRules, valueAsNumber })}
-         value={value && value}
-         className={`block py-2.5 px-0 w-full text-base text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:border-cyan-500 focus:outline-none focus:ring-0 peer ${ error ? "border-red-500" : ""}`}
-      />
-      {(type !== "hidden") &&
-         <label htmlFor={name} className={`peer-focus:font-medium absolute text-sm ${(error?.message) ? "text-red-400" : "text-gray-500"} duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-cyan-600 peer-focus:dark:text-cyan-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6`}>
-            {label}
-            {(error?.message) && ` * ${error?.message}` }
-         </label>
-      }
-      {/* {error && <span className="error-message text-red-400 text-xs">{error.message}</span>} */}
-   </div>
-);
+}: FormInputFieldProps<T>) => {
+   const [visible, setVisible] = useState(false);
+   const isPassword = type === "password";
+
+   return (
+      <div className={cn(`relative z-0 w-full`, classList)}>
+         <input
+            // type={type}
+            type={isPassword && visible ? "text" : type}
+            id={id}
+            placeholder={""}
+            {...register(name, { ...validationRules, valueAsNumber })}
+            value={value && value}
+            className={`block py-2.5 px-0 w-full text-base text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:border-cyan-500 focus:outline-none focus:ring-0 peer ${ error ? "border-red-500" : ""}`}
+         />
+         {(type !== "hidden") &&
+            <label htmlFor={name} className={`peer-focus:font-medium absolute text-sm ${(error?.message) ? "text-red-400" : "text-gray-500"} duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-cyan-600 peer-focus:dark:text-cyan-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6`}>
+               {label}
+               {(error?.message) && ` * ${error?.message}` }
+            </label>
+         }
+         {isPassword && (
+            <button
+               type="button"
+               className="absolute inset-y-0 right-3 flex items-center"
+               onClick={() => setVisible((prev) => !prev)}
+            >
+               {visible ? <EyeOff size={20} color="#ff6c37" /> : <Eye size={20} color="#701401" />}
+            </button>
+         )}
+         {/* {error && <span className="error-message text-red-400 text-xs">{error.message}</span>} */}
+      </div>
+   );
+}
 
 // RADIO BUTTON FIELD DEFINITION
 export type RadioButtonFieldProps<T extends FormDataType> = {
